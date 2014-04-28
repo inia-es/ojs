@@ -54,9 +54,17 @@ class SubmissionEditHandler extends SectionEditorHandler {
 		// author.submit.selectPrincipalContact under Metadata
 		AppLocale::requireComponents(LOCALE_COMPONENT_PKP_READER, LOCALE_COMPONENT_OJS_AUTHOR);
 
-		$this->setupTemplate(true, $articleId);
+// Cambiado INIA		$this->setupTemplate(true, $articleId);
+$status = $submission->getSubmissionStatus();
 
 		$user =& $request->getUser();
+if ($status == STATUS_ARCHIVED || $status == STATUS_PUBLISHED ||
+		    $status == STATUS_DECLINED) {$this->setupTemplate(true, $articleId,null,true,'submissionsArchives'); }
+			elseif ($status==STATUS_QUEUED_UNASSIGNED) {$this->setupTemplate(true, $articleId,null,true,'submissionsUnassigned');}
+			elseif ($status==STATUS_QUEUED_EDITING) {$this->setupTemplate(true, $articleId,null,true,'submissionsInEditing');}
+			elseif ($status==STATUS_QUEUED_REVIEW) {$this->setupTemplate(true, $articleId,null,true,'submissionsInReview');	}	
+//$this->setupTemplate(true, $articleId,null,true,'submissionsUnassigned');
+
 
 		$journalSettingsDao =& DAORegistry::getDAO('JournalSettingsDAO');
 		$journalSettings = $journalSettingsDao->getJournalSettings($journal->getId());
@@ -191,7 +199,7 @@ class SubmissionEditHandler extends SectionEditorHandler {
 
 		$sectionEditorSubmissionDao =& DAORegistry::getDAO('SectionEditorSubmissionDAO');
 		$reviewAssignmentDao =& DAORegistry::getDAO('ReviewAssignmentDAO');
-		$reviewFormDao =& DAORegistry::getDAO('ReviewFormDAO');
+		// $reviewFormDao =& DAORegistry::getDAO('ReviewFormDAO');
 
 		// Setting the round.
 		$round = isset($args[1]) ? $args[1] : $submission->getCurrentRound();
@@ -227,7 +235,7 @@ class SubmissionEditHandler extends SectionEditorHandler {
 		}
 
 		// get journal published review form titles
-		$reviewFormTitles =& $reviewFormDao->getTitlesByAssocId(ASSOC_TYPE_JOURNAL, $journal->getId(), 1);
+		// $reviewFormTitles =& $reviewFormDao->getTitlesByAssocId(ASSOC_TYPE_JOURNAL, $journal->getId(), 1);
 
 		$reviewFormResponseDao =& DAORegistry::getDAO('ReviewFormResponseDAO');
 		$reviewFormResponses = array();
@@ -1598,8 +1606,8 @@ class SubmissionEditHandler extends SectionEditorHandler {
 		$send = $request->getUserVar('send')?true:false;
 		$this->setupTemplate(true, $articleId, 'summary');
 
-		if (SectionEditorAction::unsuitableSubmission($this->submission, $send, $request)) {
-			$request->redirect(null, null, 'submission', $articleId);
+		if (SectionEditorAction::unsuitableSubmission($this->submission, $send, $request)) {s
+           $request->redirect(null, null, 'submissions','submissionsInReview');
 		}
 	}
 
