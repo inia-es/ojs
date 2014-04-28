@@ -160,10 +160,10 @@
 	<message key="editor.article.assignEditor">Añadir editor/a</message>
 	<message key="editor.article.selectEditor">Seleccionar {$roleName}</message>
 	<message key="editor.article.selectDecision">Seleccionar decisión</message>
-	<message key="editor.article.decision.accept">Publicable</message>
-	<message key="editor.article.decision.pendingRevisions">Requiere revisión</message>
-	<message key="editor.article.decision.resubmit">Reevaluable</message>
-	<message key="editor.article.decision.decline">No publicable</message>
+	<message key="editor.article.decision.accept">Aceptado</message>
+  <message key="editor.article.decision.pendingRevisions">Aceptado con cambios menores</message>
+  <message key="editor.article.decision.resubmit">Cambios mayores y nueva evaluaciÃ³n</message>
+  <message key="editor.article.decision.decline">Rechazado</message>
 	<message key="editor.article.selectLayoutEditor">Seleccionar maquetista</message>
 	<message key="editor.article.replaceLayoutEditor">Reemplazar maquetista</message>
 	<message key="editor.article.reviewSubmission">Revisar envío</message>
