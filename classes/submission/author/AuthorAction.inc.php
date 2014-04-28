@@ -389,7 +389,8 @@ class AuthorAction extends Action {
 			return true;
 		} else {
 			if (!$request->getUserVar('continued')) {
-				$email->setSubject($authorSubmission->getLocalizedTitle());
+				//	Cambiado INIA poner id en el subject
+				$email->setSubject($journal->getLocalizedSetting('initials') . ' ['.Request::getUserVar('articleId').'] ' . $authorSubmission->getLocalizedTitle());
 				if (!empty($editors)) {
 					foreach ($editors as $editor) {
 						$email->addRecipient($editor->getEmail(), $editor->getFullName());
