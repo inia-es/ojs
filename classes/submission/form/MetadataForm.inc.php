@@ -105,7 +105,7 @@ class MetadataForm extends Form {
 	 * @return string
 	 */
 	function getDefaultFormLocale() {
-		if ($this->article) return $this->article->getLocale();
+		if ($this->article->getLocale()) return $this->article->getLocale();
 		return parent::getDefaultFormLocale();
 	}
 
