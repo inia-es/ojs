@@ -16,9 +16,10 @@
 import('lib.pkp.classes.xml.XMLCustomWriter');
 
 define('CROSSREF_XMLNS_XSI' , 'http://www.w3.org/2001/XMLSchema-instance');
-define('CROSSREF_XMLNS' , 'http://www.crossref.org/schema/4.3.0');
-define('CROSSREF_VERSION' , '4.3.0');
-define('CROSSREF_XSI_SCHEMALOCATION' , 'http://www.crossref.org/schema/4.3.0 http://www.crossref.org/schema/deposit/crossref4.3.0.xsd');
+define('CROSSREF_XMLNS' , 'http://www.crossref.org/schema/4.3.3');
+define('CROSSREF_VERSION' , '4.3.3');
+define('CROSSREF_XSI_SCHEMALOCATION' , 'http://www.crossref.org/schema/4.3.3 http://www.crossref.org/schema/deposit/crossref4.3.3.xsd');
+
 
 class CrossRefExportDom {
 
@@ -197,6 +198,12 @@ class CrossRefExportDom {
 		if ($article->getDatePublished()) {
 			$publicationDateNode =& CrossRefExportDom::generatePublisherDateDom($doc, $article->getDatePublished());
 			XMLCustomWriter::appendChild($journalArticleNode, $publicationDateNode);
+		else {
+			$publicationDateNode =& CrossRefExportDom::generatePublisherDateDom($doc, $issue->getdatePublished());
+               }
+		XMLCustomWriter::appendChild($journalArticleNode, $publicationDateNode);
+ 
+
 		}
 
 		/* publisher_item is the article pages */
