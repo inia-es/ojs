@@ -70,6 +70,8 @@ class RegistrationForm extends Form {
 				$this->addCheck(new FormValidatorCustom($this, 'username', 'required', 'user.register.form.usernameExists', array(DAORegistry::getDAO('UserDAO'), 'userExistsByUsername'), array(), true));
 				$this->addCheck(new FormValidatorAlphaNum($this, 'username', 'required', 'user.register.form.usernameAlphaNumeric'));
 				$this->addCheck(new FormValidatorLength($this, 'password', 'required', 'user.register.form.passwordLengthTooShort', '>=', $site->getMinPasswordLength()));
+			        $this->addCheck(new FormValidatorCustom($this, 'password', 'required', 'user.register.form.passwordsDoNotMatch', create_function('$password,$form','echo("mail2". $form->getData(\'password2\'));return $password == $form->getData(\'password2\');'), array(&$this)));
+				// Cambiado INIA
 				$this->addCheck(new FormValidatorCustom($this, 'password', 'required', 'user.register.form.passwordsDoNotMatch', create_function('$password,$form', 'return $password == $form->getData(\'password2\');'), array(&$this)));
 				$this->addCheck(new FormValidator($this, 'firstName', 'required', 'user.profile.form.firstNameRequired'));
 				$this->addCheck(new FormValidator($this, 'lastName', 'required', 'user.profile.form.lastNameRequired'));
@@ -77,6 +79,9 @@ class RegistrationForm extends Form {
 				$this->addCheck(new FormValidatorEmail($this, 'email', 'required', 'user.profile.form.emailRequired'));
 				$this->addCheck(new FormValidatorCustom($this, 'email', 'required', 'user.register.form.emailsDoNotMatch', create_function('$email,$form', 'return $email == $form->getData(\'confirmEmail\');'), array(&$this)));
 				$this->addCheck(new FormValidatorCustom($this, 'email', 'required', 'user.register.form.emailExists', array(DAORegistry::getDAO('UserDAO'), 'userExistsByEmail'), array(), true));
+				// add for INIA check if interests !empty for registerAsReviewer
+				$this->addCheck(new FormValidatorCustom($this, 'registerAsReviewer', 'optional', 'user.profile.form.interestsRequired', create_function('$registerAsReviewer,$form', 'echo($registerAsReviewer."<br>");$interes=$form->getData(\'interests\');echo($interes."<br>");return $registerAsReviewer == \'1\' && $interes !== \'\';'), array(&$this)));
+
 				if ($this->captchaEnabled) {
 					if ($this->reCaptchaEnabled) {
 						$this->addCheck(new FormValidatorReCaptcha($this, 'recaptcha_challenge_field', 'recaptcha_response_field', Request::getRemoteAddr(), 'common.captchaField.badCaptcha'));
