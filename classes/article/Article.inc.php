@@ -123,10 +123,6 @@ class Article extends Submission {
 			$journal = $journalDao->getById($this->getJournalId());
 		}
 
-		if ($journal->getSetting('enablePublicArticleId')) {
-			$publicArticleId = $this->getPubId('publisher-id');
-			if (!empty($publicArticleId)) return $publicArticleId;
-		}
 		return $this->getId();
 	}
 
