@@ -10,9 +10,16 @@
  *}
 {if $enableLanguageToggle}
 <div class="block" id="sidebarLanguageToggle">
-	<span class="blockTitle">{translate key="common.language"}</span>
-	<form action="#">
-		<select {if $isPostRequest}disabled="disabled" {/if}size="1" name="locale" onchange="location.href={if $languageToggleNoUser}'{$currentUrl|escape}{if strstr($currentUrl, '?')}&amp;{else}?{/if}setLocale='+this.options[this.selectedIndex].value{else}('{url|escape:"javascript" page="user" op="setLocale" path="NEW_LOCALE" source=$smarty.server.REQUEST_URI}'.replace('NEW_LOCALE', this.options[this.selectedIndex].value)){/if}" class="selectMenu">{html_options options=$languageToggleLocales selected=$currentLocale}</select>
-	</form>
+	{* Cambiado INIA *}
+	<span class="blockTitleIdioma">{translate key="common.language"}</span>
+	{foreach from=$languageToggleLocales key=langkey item=langname}
+		{if $langkey == $currentLocale}
+			{$langname}
+		{else}
+			<a href={if $languageToggleNoUser}'{$currentUrl|escape}{if strstr($currentUrl, '?')}&{else}?{/if}setLocale={$langkey}'{else}'{url page="user" op="setLocale" path=$langkey source=$smarty.server.REQUEST_URI escape=false}'{/if}>
+            {$langname}</a>
+		{/if}
+   {/foreach}
+
 </div>
 {/if}
