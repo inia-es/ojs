@@ -71,8 +71,9 @@
 		
 	<!-- Navigation -->
 	<message key="navigation.journalHelp">Ayuda de la revista</message>
-	<message key="navigation.archives">Archivos</message>
+	<message key="navigation.archives">Números Anteriores</message>
 	<message key="navigation.current">Actual</message>
+	<message key="navigation.futureIssues">Números Futuros</message>
 	<message key="navigation.otherJournals">Otras revistas</message>
 	<message key="navigation.browseByIssue">Por número</message>
 	<message key="navigation.browseByAuthor">Por autor/a</message>
@@ -204,6 +205,8 @@
 	<message key="user.showAllJournals">Mostrar Mis revistas</message>
 	<message key="user.registerForOtherJournals">Registrarse en otras revistas</message>
 	<message key="user.myJournals">Mis revistas</message>
+	<!-- Add para INIA -->
+	<message key="user.register.regAuthor">Registrarse como Autor</message>
 	<message key="user.manageMySubscriptions">Gestionar Mis suscripciones</message>
 	<message key="user.noRoles.chooseJournal">En este momento la cuenta no está asociada a ninguna revista. Elija un revista:</message>
 	<message key="user.noRoles.noRolesForJournal">En este momento la cuenta no tiene asignado ningún rol para esta revista. Elija entre las siguientes opciones:</message>
@@ -532,13 +535,15 @@
         <message key="reviewer.article.schedule.response">Su respuesta</message>
         <message key="reviewer.article.schedule.submitted">Revisión enviada</message>
         <message key="reviewer.article.schedule.due">Fecha de entrega de la revisión</message>
-	<message key="reviewer.article.decision.accept">Aceptar envío</message>
-	<message key="reviewer.article.decision.pendingRevisions">Publicable con modificaciones</message>
-	<message key="reviewer.article.decision.resubmitHere">Reenviar a revisón</message>
+	        <!-- Cambiado INIA-->
+	<message key="reviewer.article.decision.accept">Aceptable en su formato actual</message>
+	<message key="reviewer.article.decision.pendingRevisions">Aceptable con cambios menores</message>
+	<message key="reviewer.article.decision.resubmitHere">Cambios mayores y nueva evaluaciÃ³n</message>
+
         <message key="reviewer.article.decision.resubmitElsewhere">Reenviar a otro sitio</message>
 	<message key="reviewer.article.decision.decline">Rechazar el envío</message>
-	<message key="reviewer.article.decision.seeComments">Ver comentarios</message>
-	<message key="reviewer.article.schedule">Programación</message>
+	+	<message key="reviewer.article.decision.decline">Rechazar su publicaciÃ³n</message>
++	<message key="reviewer.article.decision.seeComments">Otras</message>
         <message key="reviewer.article.submissionToBeReviewed">Envío para revisar</message>
         <message key="reviewer.article.reviewSchedule">Programa de revisión</message>
         <message key="reviewer.article.reviewSteps">Pasos de revisión</message>

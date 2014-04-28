@@ -36,7 +36,11 @@
 			{elseif $reviewFormElement->getElementType() == REVIEW_FORM_ELEMENT_TYPE_TEXT_FIELD}
 				<input {if $disabled}onkeypress="return ((event.keyCode >= 37 && event.keyCode <= 40) || event.charCode == 99);" {/if}type="text" name="reviewFormResponses[{$elementId}]" id="reviewFormResponses-{$elementId}" value="{$reviewFormResponses[$elementId]|escape}" size="40" maxlength="120" class="textField" />
 			{elseif $reviewFormElement->getElementType() == REVIEW_FORM_ELEMENT_TYPE_TEXTAREA}
-				<textarea {if $disabled}onkeypress="return ((event.keyCode >= 37 && event.keyCode <= 40) || event.charCode == 99);" {/if}name="reviewFormResponses[{$elementId}]" id="reviewFormResponses-{$elementId}" rows="4" cols="40" class="textArea">{$reviewFormResponses[$elementId]|escape}</textarea>
+						{if $editorPreview}
+			      <pre style="white-space: pre-wrap;word-wrap: break-word;  ">   {$reviewFormResponses[$elementId]|escape}</pre>
+			{else} 
+				<textarea {if $disabled}onkeypress="return ((event.keyCode >= 37 && event.keyCode <= 40) || event.charCode == 99);" {/if}name="reviewFormResponses[{$elementId}]" id="reviewFormResponses-{$elementId}" rows="8" cols="120" class="textArea">{$reviewFormResponses[$elementId]|escape}</textarea>
+		  {/if}
 			{elseif $reviewFormElement->getElementType() == REVIEW_FORM_ELEMENT_TYPE_CHECKBOXES}
 				{assign var=possibleResponses value=$reviewFormElement->getLocalizedPossibleResponses()}
 				{foreach name=responses from=$possibleResponses key=responseId item=responseItem}

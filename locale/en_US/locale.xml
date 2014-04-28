@@ -71,8 +71,10 @@
 
 	<!-- Navigation -->
 	<message key="navigation.journalHelp">Journal Help</message>
-	<message key="navigation.archives">Archives</message>
+<!--	<message key="navigation.archives">Archives</message> -->
+	<message key="navigation.archives">Back Issues</message>
 	<message key="navigation.current">Current</message>
+	<message key="navigation.futureIssues">Future Issues</message>
 	<message key="navigation.otherJournals">Other Journals</message>
 	<message key="navigation.browseByIssue">By Issue</message>
 	<message key="navigation.browseByAuthor">By Author</message>
@@ -583,8 +585,9 @@ Active is how many reviews are currently being considered or underway.]]></messa
         <message key="reviewer.article.schedule.submitted">Review Submitted</message>
         <message key="reviewer.article.schedule.due">Review Due</message>
 	<message key="reviewer.article.decision.accept">Accept Submission</message>
-	<message key="reviewer.article.decision.pendingRevisions">Revisions Required</message>
-	<message key="reviewer.article.decision.resubmitHere">Resubmit for Review</message>
+	<message key="reviewer.article.decision.pendingRevisions">Minor Revisions Required</message>
+	<message key="reviewer.article.decision.resubmitHere">Major Review(start New Round of Review)</message>
+
         <message key="reviewer.article.decision.resubmitElsewhere">Resubmit Elsewhere</message>
 	<message key="reviewer.article.decision.decline">Decline Submission</message>
 	<message key="reviewer.article.decision.seeComments">See Comments</message>
@@ -720,7 +723,8 @@ current password.<br /><br />Enter your email address below to reset your passwo
 	<message key="user.register.reviewerDescriptionNoInterests">Willing to conduct peer review of submissions to the journal.</message>
 	<message key="user.register.reviewerDescription">Willing to conduct peer review of submissions to the site.</message>
 	<message key="user.register.reviewerInterests">Identify reviewing interests (substantive areas and research methods):</message>
-
+  <message key="user.register.regAuthor">Register as a Author</message>
+  
 	<!-- Subscriptions -->
 	<message key="user.subscriptions.mySubscriptions">My Subscriptions</message>
 	<message key="user.subscriptions.subscriptionStatus">Subscription Status</message>

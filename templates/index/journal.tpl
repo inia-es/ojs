@@ -13,17 +13,24 @@
 {include file="common/header.tpl"}
 {/strip}
 
-{if $journalDescription}
-	<div>{$journalDescription}</div>
-{/if}
+<div class=journaldescription >{$journalDescription}</div>
 
 {call_hook name="Templates::Index::journal"}
 
+<div class=homepageizq>
+
 {if $homepageImage}
 <br />
-<div id="homepageImage"><img src="{$publicFilesDir}/{$homepageImage.uploadName|escape:"url"}" width="{$homepageImage.width|escape}" height="{$homepageImage.height|escape}" {if $homepageImageAltText != ''}alt="{$homepageImageAltText|escape}"{else}alt="{translate key="common.journalHomepageImage.altText"}"{/if} /></div>
-{/if}
 
+<div id="homepageImage"><img src="{$publicFilesDir}/{$homepageImage.uploadName|escape:"url"}" width="{$homepageImage.width|escape}" height="{$homepageImage.height|escape}" {if $homepageImageAltText != ''}alt="{$homepageImageAltText|escape}"{else}alt="{translate key="common.journalHomepageImage.altText"}"{/if} /></div>
+  <br />
+{/if}
+ <div style="text-align: center;"><a href="{url page="issue" op="current"}">{translate key="navigation.current"}</a></div>
+ <br />
+ <br />
+  <div style="text-align: center;"><a href="{url page="issue" op="futureIssues"}">{translate key="navigation.futureIssues"}</a></div>
+</div>
+<div style="overflow:hidden;width:100%"> </div>
 {if $additionalHomeContent}
 <br />
 {$additionalHomeContent}
@@ -41,7 +48,7 @@
 		</table>
 	</div>
 {/if}
-
+	
 {if $issue && $currentJournal->getSetting('publishingMode') != $smarty.const.PUBLISHING_MODE_NONE}
 	{* Display the table of contents or cover page of the current issue. *}
 	<br />

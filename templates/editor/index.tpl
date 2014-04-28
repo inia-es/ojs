@@ -27,6 +27,11 @@
 <div class="separator">&nbsp;</div>
 
 &nbsp;<br />
+<form action="#">
+<ul class="filter">
+	<li>{translate key="editor.submissions.inSection"}: <select name="section" onchange="location.href='{url|escape:"javascript" path="searchsection" searchField=$searchField searchMatch=$searchMatch search=$search dateFromDay=$dateFromDay dateFromYear=$dateFromYear dateFromMonth=$dateFromMonth dateToDay=$dateToDay dateToYear=$dateToYear dateToMonth=$dateToMonth dateSearchField=$dateSearchField section="SECTION_ID" escape=false}'.replace('SECTION_ID', this.options[this.selectedIndex].value)" size="1" class="selectMenu">{html_options options=$sectionOptions selected=$section}</select></li>
+</ul>
+</form>
 
 {if !$dateFrom}
 {assign var="dateFrom" value="--"}
