@@ -20,10 +20,10 @@
 	{assign var=lastFirstLetter value=$firstLetter}
 	{assign var=firstLetter value=$author->getLastName()|String_substr:0:1}
 
-	{if $lastFirstLetter|lower != $firstLetter|lower}
-			<div id="{$firstLetter|escape}">
-		<h3>{$firstLetter|escape}</h3>
-			</div>
+	{if $lastFirstLetter|utf8_accents_to_ascii !=  $firstLetter|utf8_accents_to_ascii} 
+		<div id="{$firstLetter|escape}">
+			<h3>{$firstLetter|escape}</h3>
+		</div>
 	{/if}
 
 	{assign var=lastAuthorName value=$authorName}
