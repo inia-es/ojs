@@ -231,8 +231,9 @@ class SearchHandler extends Handler {
 			$templateMgr->display('search/authorDetails.tpl');
 		} else {
 			// Show the author index
-			$searchInitial = $request->getUserVar('searchInitial');
-			$rangeInfo = $this->getRangeInfo('authors');
+			require_once './lib/pkp/lib/phputf8/utils/ascii.php';
+			$searchInitial = Request::getUserVar('searchInitial');
+			$rangeInfo = Handler::getRangeInfo('authors');
 
 			$authors =& $authorDao->getAuthorsAlphabetizedByJournal(
 				isset($journal)?$journal->getId():null,
