@@ -40,7 +40,7 @@ class ReviewReminder extends ScheduledTask {
 		$email->setJournal($journal);
 		$email->setFrom($journal->getSetting('contactEmail'), $journal->getSetting('contactName'));
 		$email->addRecipient($reviewer->getEmail(), $reviewer->getFullName());
-		$email->setSubject($email->getSubject($journal->getPrimaryLocale()));
+		$email->setSubject($email->getSubject($journal->getPrimaryLocale().'['.$article->getId().']'));
 		$email->setBody($email->getBody($journal->getPrimaryLocale()));
 
 		$urlParams = array();
