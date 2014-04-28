@@ -509,6 +509,28 @@ class IssueHandler extends Handler {
 		$templateMgr->assign('pageCrumbTitleTranslated', $issueCrumbTitle);
 		$templateMgr->assign('issueHeadingTitle', $issueHeadingTitle);
 	}
+		function futureIssues($args, $request) {
+		$this->validate($request);
+		$this->setupTemplate();
+
+		$journal =& Request::getJournal();
+		$issueDao =& DAORegistry::getDAO('IssueDAO');
+		$rangeInfo = Handler::getRangeInfo('issues');
+
+		$publishedIssuesIterator = $issueDao->getUnpublishedIssues($journal->getJournalId(), $rangeInfo);
+/*     */
+		import('classes.file.PublicFileManager');
+		$publicFileManager = new PublicFileManager();
+		$coverPagePath = Request::getBaseUrl() . '/';
+		$coverPagePath .= $publicFileManager->getJournalFilesPath($journal->getId()) . '/';
+
+		$templateMgr =& TemplateManager::getManager();
+		$templateMgr->assign('coverPagePath', $coverPagePath);
+		$templateMgr->assign('locale', Locale::getLocale());
+		$templateMgr->assign_by_ref('issues', $publishedIssuesIterator);
+		$templateMgr->assign('helpTopicId', 'user.currentAndArchives');
+		$templateMgr->display('issue/archive.tpl');
+	}
 }
 
 ?>

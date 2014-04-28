@@ -21,6 +21,7 @@ switch ($op) {
 	case 'current':
 	case 'view':
 	case 'archive':
+	case 'futureIssues':
 	case 'viewIssue':
 	case 'viewDownloadInterstitial':
 	case 'viewFile':

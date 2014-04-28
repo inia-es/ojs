@@ -40,6 +40,9 @@
 
 	<td class="tocTitle">{if !$hasAccess || $hasAbstract}<a href="{url page="article" op="view" path=$articlePath}">{$article->getLocalizedTitle()|strip_unsafe_html}</a>{else}{$article->getLocalizedTitle()|strip_unsafe_html}{/if}</td>
 	<td class="tocGalleys">
+	{if $article->getSuppFiles()}<a href="javascript:openRTWindow('{url page="rt" op="suppFiles" path=$articleId|to_array:$galleyId}');">{translate key="article.suppFilesAbbrev"}</a>{/if}
+	
+	{if $hasAbstract}<a href="{url page="article" op="view" path=$articlePath}">{translate key=article.abstract}{else}{translate key="article.details"}{/if}</a>
 		{if $hasAccess || ($subscriptionRequired && $showGalleyLinks)}
 			{foreach from=$article->getGalleys() item=galley name=galleyList}
 				<a href="{url page="article" op="view" path=$articlePath|to_array:$galley->getBestGalleyId($currentJournal)}" {if $galley->getRemoteURL()}target="_blank" {/if}class="file">{$galley->getGalleyLabel()|escape}</a>
