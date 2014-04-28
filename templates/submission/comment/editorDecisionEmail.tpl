@@ -78,6 +78,7 @@ function deleteAttachment(fileId) {
 <tr valign="top">
 	<td class="label">{fieldLabel name="cc" key="email.cc"}</td>
 	<td class="value">
+		{call_hook name="Templates::submission::comment::editorDecisionEmail"}
 		{foreach from=$cc item=ccAddress}
 			<input type="text" name="cc[]" id="cc" value="{if $ccAddress.name != ''}{$ccAddress.name|escape} &lt;{$ccAddress.email|escape}&gt;{else}{$ccAddress.email|escape}{/if}" size="40" maxlength="120" class="textField" /><br/>
 		{foreachelse}
