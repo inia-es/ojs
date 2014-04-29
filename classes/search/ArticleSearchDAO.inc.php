@@ -100,7 +100,8 @@ class ArticleSearchDAO extends DAO {
 			$sqlWhere .= ' AND i.journal_id = ?';
 			$params[] = $journal->getId();
 		}
-
+/*    			 cambiado INIA			
+			ORDER BY count DESC  */
 		$result =& $this->retrieveCached(
 			'SELECT
 				o.article_id,
@@ -114,7 +115,7 @@ class ArticleSearchDAO extends DAO {
 				i.issue_id = pa.issue_id AND
 				i.published = 1 AND ' . $sqlWhere . '
 			GROUP BY o.article_id
-			ORDER BY count DESC
+	                ORDER BY i.date_published ASC 
 			LIMIT ' . $limit,
 			$params,
 			3600 * $cacheHours // Cache for 24 hours
