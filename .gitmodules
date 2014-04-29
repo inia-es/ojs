@@ -4,3 +4,18 @@
 [submodule "plugins/importexport/duracloud/lib/DuraCloud-PHP"]
 	path = plugins/importexport/duracloud/lib/DuraCloud-PHP
 	url = https://github.com/asmecher/DuraCloud-PHP.git
+[submodule "plugins/generic/Archives"]
+	path = plugins/generic/Archives
+	url = https://github.com/inia-es/plugin-archives.git
+[submodule "plugins/generic/journalTemplate"]
+	path = plugins/generic/journalTemplate
+	url = https://github.com/inia-es/plugin-journalTemplate.git
+[submodule "plugins/generic/customizedSjar"]
+	path = plugins/generic/customizedSjar
+	url = https://github.com/inia-es/plugin-customizedSjar.git
+[submodule "plugins/generic/editorsEmails"]
+	path = plugins/generic/editorsEmails
+	url = https://github.com/inia-es/plugin-editorsEmails.git
+[submodule "plugins/blocks/linkSubmitting"]
+	path = plugins/blocks/linkSubmitting
+	url = https://github.com/inia-es/plugin-linkSubmitting.git
