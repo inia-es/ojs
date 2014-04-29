@@ -97,8 +97,12 @@ class MailTemplate extends PKPMailTemplate {
 		}
 
 		if ($journal && !Request::getUserVar('continued')) {
-			$this->setSubject('[' . $journal->getLocalizedSetting('initials') . '] ' . $this->getSubject());
-		}
+			if(Request::getUserVar('articleId')== ''){
+				$this->setSubject('[' . $journal->getLocalizedSetting('initials') . '] ' . $this->getSubject());}
+			else {
+				// INIA changes. Add article identification and language to the subject			
+				$this->setSubject( $journal->getLocalizedSetting('initials') . ' ['.Request::getUserVar('articleId').'] ' . $this->getSubject());
+		}}
 
 		$this->journal =& $journal;
 	}
