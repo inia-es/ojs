@@ -3,8 +3,8 @@
 /**
  * @file plugins/importexport/crossref/CrossRefExportDom.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class CrossRefExportDom
@@ -204,6 +204,9 @@ class CrossRefExportDom {
 		XMLCustomWriter::appendChild($journalArticleNode, $publicationDateNode);
  
 
+		}
+		else {
+			$publicationDateNode =& CrossRefExportDom::generatePublisherDateDom($doc, $issue->getdatePublished());
 		}
 
 		/* publisher_item is the article pages */

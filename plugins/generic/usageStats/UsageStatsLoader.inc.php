@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/usageStats/UsageStatsLoader.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class UsageStatsLoader
@@ -129,11 +129,11 @@ class UsageStatsLoader extends FileLoader {
 	/**
 	 * @see FileLoader::processFile()
 	 */
-	function processFile($filePath) {
+	function processFile($filePath, &$errorMsg) {
 		$fhandle = fopen($filePath, 'r');
 		$geoTool = $this->_geoLocationTool;
 		if (!$fhandle) {
-			throw new Exception(__('plugins.generic.usageStats.openFileFailed', array('file' => $filePath)));
+			$errorMsg = __('plugins.generic.usageStats.openFileFailed', array('file' => $filePath));
 		}
 
 		$loadId = basename($filePath);
@@ -153,8 +153,8 @@ class UsageStatsLoader extends FileLoader {
 			if ($line == '') continue;
 			$entryData = $this->_getDataFromLogEntry($line);
 			if (!$this->_isLogEntryValid($entryData, $lineNumber)) {
-				throw new Exception(__('plugins.generic.usageStats.invalidLogEntry',
-					array('file' => $filePath, 'lineNumber' => $lineNumber)));
+				$errorMsg = __('plugins.generic.usageStats.invalidLogEntry',
+					array('file' => $filePath, 'lineNumber' => $lineNumber));
 			}
 
 			// Avoid internal apache requests.
@@ -230,12 +230,12 @@ class UsageStatsLoader extends FileLoader {
 				if ($secondsBetweenRequests < $timeFilter) {
 					// We have to store the last access,
 					// so we delete the most recent one.
-					$statsDao->deleteRecord($assocType, $assocId, $loadId);
+					$statsDao->deleteRecord($assocType, $assocId, $lastInsertedEntries[$entryHash], $loadId);
 				}
 			}
 
 			$lastInsertedEntries[$entryHash] = $entryData['date'];
-			$statsDao->insert($assocType, $assocId, $day, $countryCode, $region, $cityName, $type, $loadId);
+			$statsDao->insert($assocType, $assocId, $day, $entryData['date'], $countryCode, $region, $cityName, $type, $loadId);
 		}
 
 		fclose($fhandle);

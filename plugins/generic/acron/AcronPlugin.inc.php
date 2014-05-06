@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/acron/AcronPlugin.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2000-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2000-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class AcronPlugin
@@ -177,6 +177,9 @@ class AcronPlugin extends GenericPlugin {
 		$xmlParser = new XMLParser();
 
 		$taskFilesPath = array();
+
+		// Load all plugins so any plugin can register a crontab
+		PluginRegistry::loadAllPlugins();
 
 		// Let plugins register their scheduled tasks too.
 		HookRegistry::call('AcronPlugin::parseCronTab', array(&$taskFilesPath));
