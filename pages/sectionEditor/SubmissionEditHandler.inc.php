@@ -1603,7 +1603,7 @@ if ($status == STATUS_ARCHIVED || $status == STATUS_PUBLISHED ||
 		$send = $request->getUserVar('send')?true:false;
 		$this->setupTemplate(true, $articleId, 'summary');
 
-		if (SectionEditorAction::unsuitableSubmission($this->submission, $send, $request)) {s
+		if (SectionEditorAction::unsuitableSubmission($this->submission, $send, $request)) {
            $request->redirect(null, null, 'submissions','submissionsInReview');
 		}
 	}
