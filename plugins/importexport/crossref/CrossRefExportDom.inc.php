@@ -203,12 +203,6 @@ class CrossRefExportDom {
                }
 		XMLCustomWriter::appendChild($journalArticleNode, $publicationDateNode);
  
-
-		}
-		else {
-			$publicationDateNode =& CrossRefExportDom::generatePublisherDateDom($doc, $issue->getdatePublished());
-		}
-
 		/* publisher_item is the article pages */
 		if ($article->getPages() != '') {
 			$pageNode =& XMLCustomWriter::createElement($doc, 'pages');
