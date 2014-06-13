@@ -25,6 +25,3 @@
 [submodule "plugins/generic/editorsEmailsFS"]
 	path = plugins/generic/editorsEmailsFS
 	url = https://github.com/inia-es/plugin-editorsEmailsFS.git
-[submodule "plugins/blocks/normasAutores"]
-	path = plugins/blocks/normasAutores
-	url = https://github.com/inia-es/plugin-normasAutores.git
