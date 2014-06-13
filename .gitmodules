@@ -16,9 +16,6 @@
 [submodule "plugins/generic/editorsEmails"]
 	path = plugins/generic/editorsEmails
 	url = https://github.com/inia-es/plugin-editorsEmails.git
-[submodule "plugins/blocks/linkSubmitting"]
-	path = plugins/blocks/linkSubmitting
-	url = https://github.com/inia-es/plugin-linkSubmitting.git
 [submodule "plugins/styles"]
 	path = plugins/styles
 	url = https://github.com/inia-es/plugin-styles.git
