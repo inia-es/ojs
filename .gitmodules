@@ -1,6 +1,9 @@
 [submodule "lib/pkp"]
 	path = lib/pkp
-	url = git@github.com:pkp/pkp-lib.git
+	url = https://github.com/inia-es/pkp-lib.git
 [submodule "plugins/importexport/duracloud/lib/DuraCloud-PHP"]
 	path = plugins/importexport/duracloud/lib/DuraCloud-PHP
 	url = git@github.com:asmecher/DuraCloud-PHP
+[submodule "plugins/UploadNotification"]
+	path = plugins/UploadNotification
+	url = https://github.com/inia-es/plugin-uploadNotification
