@@ -1599,7 +1599,8 @@ class SubmissionEditHandler extends SectionEditorHandler {
 		$this->setupTemplate(true, $articleId, 'summary');
 
 		if (SectionEditorAction::unsuitableSubmission($this->submission, $send, $request)) {
-			$request->redirect(null, null, 'submission', $articleId);
+			// Redirect to review list after deleting a submission
+			$request->redirect(null, null, 'submissions','submissionsInReview');
 		}
 	}
 
