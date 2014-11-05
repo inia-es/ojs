@@ -54,9 +54,28 @@ class SubmissionEditHandler extends SectionEditorHandler {
 		// author.submit.selectPrincipalContact under Metadata
 		AppLocale::requireComponents(LOCALE_COMPONENT_PKP_READER, LOCALE_COMPONENT_OJS_AUTHOR);
 
-		$this->setupTemplate(true, $articleId);
+		// Cambiado INIA: inia-es/ojs#7
+		$status = $submission->getSubmissionStatus();
 
 		$user =& $request->getUser();
+		$template = '';
+		switch ($status) {
+			case STATUS_ARCHIVED:
+			case STATUS_PUBLISHED:
+			case STATUS_DECLINED:
+				$template = 'submissionsArchives';
+				break;
+			case STATUS_QUEUED_UNASSIGNED:
+				$template = 'submissionsUnassigned';
+				break;
+			case STATUS_QUEUED_EDITING:
+				$template = 'submissionsInEditing';
+				break;
+			case STATUS_QUEUED_REVIEW:
+				$template = 'submissionsInReview';
+				break;
+		}
+		$this->setupTemplate(true, $articleId, null, true, $template);
 
 		$journalSettingsDao =& DAORegistry::getDAO('JournalSettingsDAO');
 		$journalSettings = $journalSettingsDao->getJournalSettings($journal->getId());
@@ -191,7 +210,6 @@ class SubmissionEditHandler extends SectionEditorHandler {
 
 		$sectionEditorSubmissionDao =& DAORegistry::getDAO('SectionEditorSubmissionDAO');
 		$reviewAssignmentDao =& DAORegistry::getDAO('ReviewAssignmentDAO');
-		$reviewFormDao =& DAORegistry::getDAO('ReviewFormDAO');
 
 		// Setting the round.
 		$round = isset($args[1]) ? $args[1] : $submission->getCurrentRound();
@@ -225,9 +243,6 @@ class SubmissionEditHandler extends SectionEditorHandler {
 				}
 			}
 		}
-
-		// get journal published review form titles
-		$reviewFormTitles =& $reviewFormDao->getTitlesByAssocId(ASSOC_TYPE_JOURNAL, $journal->getId(), 1);
 
 		$reviewFormResponseDao =& DAORegistry::getDAO('ReviewFormResponseDAO');
 		$reviewFormResponses = array();

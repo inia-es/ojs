@@ -190,7 +190,9 @@ class SectionEditorHandler extends Handler {
 
 		$roleSymbolic = $isEditor ? 'editor' : 'sectionEditor';
 		$roleKey = $isEditor ? 'user.role.editor' : 'user.role.sectionEditor';
-		$pageHierarchy = $subclass ? array(array(Request::url(null, 'user'), 'navigation.user'), array(Request::url(null, $roleSymbolic), $roleKey), array(Request::url(null, $roleSymbolic), 'article.submissions'))
+		/* cambiado INIA: inia-es/ojs#7 */
+		$pageHierarchy = $subclass ? isset($page)? array(array(Request::url(null, 'user'), 'navigation.user'), array(Request::url(null, $roleSymbolic), $roleKey), array(Request::url(null, $roleSymbolic), 'article.submissions'), array(Request::url(null, $roleSymbolic,'submissions',$page), 'common.queue.long.'.$page))
+		        : array(array(Request::url(null, 'user'), 'navigation.user'), array(Request::url(null, $roleSymbolic), $roleKey), array(Request::url(null, $roleSymbolic), 'article.submissions'))
 			: array(array(Request::url(null, 'user'), 'navigation.user'), array(Request::url(null, $roleSymbolic), $roleKey));
 
 		import('classes.submission.sectionEditor.SectionEditorAction');
