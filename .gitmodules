@@ -7,3 +7,6 @@
 [submodule "plugins/UploadNotification"]
 	path = plugins/UploadNotification
 	url = https://github.com/inia-es/plugin-uploadNotification
+[submodule "plugins/generic/Archives"]
+	path = plugins/generic/Archives
+	url = https://github.com/inia-es/plugin-archives.git
