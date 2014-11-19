@@ -10,3 +10,6 @@
 [submodule "plugins/generic/Archives"]
 	path = plugins/generic/Archives
 	url = https://github.com/inia-es/plugin-archives.git
+[submodule "plugins/generic/editorsEmails"]
+	path = plugins/generic/editorsEmails
+	url = https://github.com/inia-es/plugin-editorsEmails.git
