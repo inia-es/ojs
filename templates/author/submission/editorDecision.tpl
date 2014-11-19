@@ -82,4 +82,14 @@
 		</td>
 	</tr>
 </table>
+<br>
+<table width="100%" class="data">
+	<tr>
+		<td>
+			<a href="/files/journals/1/information/Howsubmitrevisedversion.pdf">
+				<strong><span style="font-family: 'Verdana','sans-serif'; color: #a20000; font-size: 12pt;">How to submit a revised version</span></strong>
+			</a>
+		</td>
+	</tr>
+</table>
 </div>
