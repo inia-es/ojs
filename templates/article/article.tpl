@@ -48,7 +48,7 @@
 	<br />
 	{if $article->getLocalizedAbstract()}
 		<div id="articleAbstract">
-		<h4>{translate key="article.abstract"}</h4>
+		<h4 class="apartados">{translate key="article.abstract"}</h4>
 		<br />
 		<div>{$article->getLocalizedAbstract()|strip_unsafe_html|nl2br}</div>
 		<br />
@@ -57,7 +57,7 @@
 
 	{if $article->getLocalizedSubject()}
 		<div id="articleSubject">
-		<h4>{translate key="article.subject"}</h4>
+		<h4 class="apartados">{translate key="article.subject"}</h4>
 		<br />
 		<div>{$article->getLocalizedSubject()|escape}</div>
 		<br />
@@ -120,7 +120,10 @@
 	{if $pubId}
 		<br />
 		<br />
-		{$pubIdPlugin->getPubIdDisplayType()|escape}: {if $pubIdPlugin->getResolvingURL($currentJournal->getId(), $pubId)|escape}<a id="pub-id::{$pubIdPlugin->getPubIdType()|escape}" href="{$pubIdPlugin->getResolvingURL($currentJournal->getId(), $pubId)|escape}">{$pubIdPlugin->getResolvingURL($currentJournal->getId(), $pubId)|escape}</a>{else}{$pubId|escape}{/if}
+		{* Add INIA*}	
+		{if strlen($pubId)>15}
+			{$pubIdPlugin->getPubIdDisplayType()|escape}: {if $pubIdPlugin->getResolvingURL($currentJournal->getId(), $pubId)|escape}<a id="pub-id::{$pubIdPlugin->getPubIdType()|escape}" href="{$pubIdPlugin->getResolvingURL($currentJournal->getId(), $pubId)|escape}">{$pubId|escape}</a>{else}{$pubId|escape}{/if}
+		{/if}
 	{/if}
 {/foreach}
 {call_hook name="Templates::Article::MoreInfo"}
