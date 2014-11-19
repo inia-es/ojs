@@ -231,6 +231,7 @@ class SearchHandler extends Handler {
 			$templateMgr->display('search/authorDetails.tpl');
 		} else {
 			// Show the author index
+			require_once './lib/pkp/lib/phputf8/utils/ascii.php';
 			$searchInitial = $request->getUserVar('searchInitial');
 			$rangeInfo = $this->getRangeInfo('authors');
 
