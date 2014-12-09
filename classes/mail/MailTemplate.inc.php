@@ -97,7 +97,19 @@ class MailTemplate extends PKPMailTemplate {
 		}
 
 		if ($journal && !Request::getUserVar('continued')) {
-			$this->setSubject('[' . $journal->getLocalizedSetting('initials') . '] ' . $this->getSubject());
+			$initials = $journal->getLocalizedSetting('initials');
+			$subject = $this->getSubject();
+			$newSubject = "";
+			if(Request::getUserVar('articleId')== '') {
+				// Default case. Same than OJS codebase
+				$newSubject = "[$initials] $subject";
+			}
+			else {
+				// Modificado para INIA
+				$articleId = Request::getUserVar('articleId');
+				$newSubject = "$initials [$articleId] $subject";
+			}
+			$this->setSubject($newSubject);
 		}
 
 		$this->journal =& $journal;
