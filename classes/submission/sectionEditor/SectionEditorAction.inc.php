@@ -698,6 +698,9 @@ class SectionEditorAction extends Action {
 				);
 				$email->assignParams($paramArray);
 				$email->addRecipient($author->getEmail(), $author->getFullName());
+				$contactEmail = $journal->getSetting('contactEmail');
+				$contactName = $journal->getSetting('contactName');
+				$email->addBcc($contactEmail,$contactName);
 			}
 			$email->displayEditForm($request->url(null, null, 'unsuitableSubmission'), array('articleId' => $sectionEditorSubmission->getId()),'submission/comment/editorDecisionEmail.tpl');
 			return false;
