@@ -14,16 +14,32 @@
 {/strip}
 
 {if $journalDescription}
-	<div>{$journalDescription}</div>
+	<div class="journaldescription">{$journalDescription}</div>
 {/if}
 
 {call_hook name="Templates::Index::journal"}
 
+<div class="homepageizq">
 {if $homepageImage}
 <br />
 <div id="homepageImage"><img src="{$publicFilesDir}/{$homepageImage.uploadName|escape:"url"}" width="{$homepageImage.width|escape}" height="{$homepageImage.height|escape}" {if $homepageImageAltText != ''}alt="{$homepageImageAltText|escape}"{else}alt="{translate key="common.journalHomepageImage.altText"}"{/if} /></div>
+<br/>
 {/if}
 
+<div style="text-align: center;">
+	<a href="{url page="issue" op="current"}">
+		{translate key="navigation.current"}
+	</a>
+</div>
+<br/>
+<br/>
+<div style="text-align: center;">
+	<a href="{url page="issue" op="futureIssues"}">
+		{translate key="navigation.futureIssues"}
+	</a>
+</div>
+</div> <!-- homepageizq -->
+<div style="overflow:hidden;width:100%"> </div>
 {if $additionalHomeContent}
 <br />
 {$additionalHomeContent}

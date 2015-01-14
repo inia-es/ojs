@@ -73,6 +73,7 @@
 	<message key="navigation.journalHelp">Ayuda de la revista</message>
 	<message key="navigation.archives">Archivos</message>
 	<message key="navigation.current">Actual</message>
+	<message key="navigation.futureIssues">Números Futuros</message>
 	<message key="navigation.otherJournals">Otras revistas</message>
 	<message key="navigation.browseByIssue">Por número</message>
 	<message key="navigation.browseByAuthor">Por autor/a</message>
