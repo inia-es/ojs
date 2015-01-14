@@ -137,6 +137,7 @@ class Action extends PKPAction {
 						}
 					}
 				}
+				ksort($authors);
 				$metadataForm->setData('authors', $authors);
 			}
 
