@@ -61,9 +61,10 @@ class EditorHandler extends SectionEditorHandler {
 		import('classes.issue.IssueAction');
 		$issueAction = new IssueAction();
 		$templateMgr->register_function('print_issue_id', array($issueAction, 'smartyPrintIssueId'));
+		$section = Request::getUserVar('section');
 
 		// If a search was performed, get the necessary info.
-		if (array_shift($args) == 'search') {
+		if (array_shift($args) == 'search' ||  $section <> FILTER_SECTION_ALL )  {
 			$rangeInfo = $this->getRangeInfo('submissions');
 
 			// Get the user's search conditions, if any
@@ -150,6 +151,7 @@ class EditorHandler extends SectionEditorHandler {
 			$templateMgr->assign('sortDirection', $sortDirection);
 		}
 
+		$templateMgr->assign('section', $section); 
 		$submissionsCount =& $editorSubmissionDao->getEditorSubmissionsCount($journal->getId());
 		$templateMgr->assign('submissionsCount', $submissionsCount);
 		$templateMgr->assign('helpTopicId', 'editorial.editorsRole');
