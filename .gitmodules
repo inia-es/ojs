@@ -3,7 +3,7 @@
 	url = https://github.com/inia-es/pkp-lib.git
 [submodule "plugins/importexport/duracloud/lib/DuraCloud-PHP"]
 	path = plugins/importexport/duracloud/lib/DuraCloud-PHP
-	url = git@github.com:asmecher/DuraCloud-PHP
+	url = git@github.com/asmecher/DuraCloud-PHP
 [submodule "plugins/generic/AddEmailsFS"]
 	path = plugins/generic/AddEmailsFS
 	url = https://github.com/inia-es/plugin-addEmailsFS.git
@@ -25,3 +25,12 @@
 [submodule "plugins/generic/UploadNotification"]
 	path = plugins/generic/UploadNotification
 	url = https://github.com/inia-es/plugin-uploadNotification.git
+[submodule "public/site"]
+	path = public/site
+	url = https://github.com/inia-es/ojs-public_site
+[submodule "public/journals/1"]
+	path = public/journals/1
+	url = https://github.com/inia-es/ojs-public_journals_sjar
+[submodule "public/journals/2"]
+	path = public/journals/2
+	url = https://github.com/inia-es/ojs-public_journals_fs

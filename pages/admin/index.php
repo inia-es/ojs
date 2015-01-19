@@ -7,8 +7,8 @@
 /**
  * @file pages/admin/index.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @ingroup pages_admin
@@ -45,6 +45,7 @@ switch ($op) {
 	case 'installLocale':
 	case 'uninstallLocale':
 	case 'reloadLocale':
+	case 'reloadDefaultEmailTemplates':
 	case 'downloadLocale':
 		define('HANDLER_CLASS', 'AdminLanguagesHandler');
 		import('pages.admin.AdminLanguagesHandler');

@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/googleAnalytics/GoogleAnalyticsPlugin.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class GoogleAnalyticsPlugin
@@ -193,22 +193,24 @@ class GoogleAnalyticsPlugin extends GenericPlugin {
 				$trackingCode = $this->getSetting($journalId, 'trackingCode');
 				if ($trackingCode == "ga") {
 					$output .= $templateMgr->fetch($this->getTemplatePath() . 'pageTagGa.tpl');
-				} else {
+				} elseif ($trackingCode == "urchin") {
 					$output .= $templateMgr->fetch($this->getTemplatePath() . 'pageTagUrchin.tpl');
+				} elseif ($trackingCode == "analytics") {
+					$output .= $templateMgr->fetch($this->getTemplatePath() . 'pageTagAnalytics.tpl');
 				}
 			}
 		}
 		return false;
 	}
 
- 	/*
- 	 * Execute a management verb on this plugin
- 	 * @param $verb string
- 	 * @param $args array
+	/**
+	 * Execute a management verb on this plugin
+	 * @param $verb string
+	 * @param $args array
 	 * @param $message string Result status message
 	 * @param $messageParams array Parameters for the message key
- 	 * @return boolean
- 	 */
+	 * @return boolean
+	 */
 	function manage($verb, $args, &$message, &$messageParams) {
 		if (!parent::manage($verb, $args, $message, $messageParams)) return false;
 
@@ -227,11 +229,11 @@ class GoogleAnalyticsPlugin extends GenericPlugin {
 						Request::redirect(null, 'manager', 'plugin');
 						return false;
 					} else {
-						$this->setBreadCrumbs(true);
+						$this->setBreadcrumbs(true);
 						$form->display();
 					}
 				} else {
-					$this->setBreadCrumbs(true);
+					$this->setBreadcrumbs(true);
 					$form->initData();
 					$form->display();
 				}

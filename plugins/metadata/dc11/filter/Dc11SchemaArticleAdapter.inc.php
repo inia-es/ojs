@@ -3,8 +3,8 @@
 /**
  * @file plugins/metadata/dc11/filter/Dc11SchemaArticleAdapter.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2000-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2000-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class Dc11SchemaArticleAdapter
@@ -247,8 +247,14 @@ class Dc11SchemaArticleAdapter extends MetadataDataObjectAdapter {
 				(array) $article->getCoverageSample(null));
 		$this->_addLocalizedElements($dc11Description, 'dc:coverage', $coverage);
 
-		// Rights
-		$this->_addLocalizedElements($dc11Description, 'dc:rights', $journal->getSetting('copyrightNotice'));
+		// Rights: Add both copyright statement and license
+		$copyrightHolder = $article->getLocalizedCopyrightHolder();
+		$copyrightYear = $article->getCopyrightYear();
+		if (!empty($copyrightHolder) && !empty($copyrightYear)) {
+			$dc11Description->addStatement('dc:rights', __('submission.copyrightStatement', array('copyrightHolder' => $copyrightHolder, 'copyrightYear' => $copyrightYear)));
+		}
+
+		if ($licenseUrl = $article->getLicenseURL()) $dc11Description->addStatement('dc:rights', $licenseUrl);
 
 		Hookregistry::call('Dc11SchemaArticleAdapter::extractMetadataFromDataObject', array(&$this, $article, $journal, $issue, &$dc11Description));
 

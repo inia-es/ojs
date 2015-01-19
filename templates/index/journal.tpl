@@ -1,8 +1,8 @@
 {**
  * templates/index/journal.tpl
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * Journal index page.
@@ -14,7 +14,7 @@
 {/strip}
 
 {if $journalDescription}
-	<div class="journaldescription">{$journalDescription}</div>
+	<div id="journalDescription">{$journalDescription}</div>
 {/if}
 
 {call_hook name="Templates::Index::journal"}
@@ -42,7 +42,7 @@
 <div style="overflow:hidden;width:100%"> </div>
 {if $additionalHomeContent}
 <br />
-{$additionalHomeContent}
+<div id="additionalHomeContent">{$additionalHomeContent}</div>
 {/if}
 
 {if $enableAnnouncementsHomepage}

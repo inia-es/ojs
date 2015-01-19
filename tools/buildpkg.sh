@@ -3,8 +3,8 @@
 #
 # buildpkg.sh
 #
-# Copyright (c) 2013 Simon Fraser University Library
-# Copyright (c) 2003-2013 John Willinsky
+# Copyright (c) 2013-2014 Simon Fraser University Library
+# Copyright (c) 2003-2014 John Willinsky
 # Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
 #
 # Script to create an OJS package for distribution.
@@ -31,14 +31,19 @@ EXCLUDE="dbscripts/xml/data/locale/en_US/sample.xml		\
 dbscripts/xml/data/sample.xml					\
 docs/dev							\
 locale/te_ST							\
+plugins/importexport/duracloud/lib/DuraCloud-PHP/.git		\
 tests								\
 tools/buildpkg.sh						\
 tools/genLocaleReport.sh					\
 tools/genTestLocale.php						\
+tools/startSubmodulesTRAVIS.sh					\
 tools/test							\
 lib/pkp/tests							\
 .git								\
+.travis.yml							\
 lib/pkp/.git							\
+lib/pkp/tools/travis						\
+lib/pkp/tools/mergePullRequest.sh				\
 lib/pkp/lib/swordappv2/.git					\
 lib/pkp/lib/swordappv2/test"
 
@@ -89,10 +94,5 @@ if [ ! -z "$PATCHDIR" ]; then
 fi
 
 cd ..
-
-echo -n "Building doxygen documentation... "
-doxygen docs/dev/ojs2.doxygen && cd docs/dev/doxygen && tar czf ../../../${BUILD}-doxygen.tar.gz html && cd ../../..
-
-echo "Done"
 
 rm -r $TMPDIR

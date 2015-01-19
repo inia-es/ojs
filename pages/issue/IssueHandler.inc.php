@@ -3,8 +3,8 @@
 /**
  * @file pages/issue/IssueHandler.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class IssueHandler
@@ -57,14 +57,16 @@ class IssueHandler extends Handler {
 		$templateMgr =& TemplateManager::getManager();
 
 		if ($issue != null) {
-			$request->redirect(null, 'issue', 'view', $issue->getId(), $request->getQueryArray());
+			if ($showToc == 'showToc') {
+				$request->redirect(null, 'issue', 'view', array($issue->getId(), "showToc"), $request->getQueryArray());
+			} else {
+				$request->redirect(null, 'issue', 'view', $issue->getId(), $request->getQueryArray());
+			}
 		} else {
 			$issueCrumbTitle = __('current.noCurrentIssue');
 			$issueHeadingTitle = __('current.noCurrentIssue');
 		}
 
-		// Display creative commons logo/licence if enabled
-		$templateMgr->assign('displayCreativeCommons', $journal->getSetting('includeCreativeCommons'));
 		$templateMgr->assign('pageHierarchy', array(array($request->url(null, 'issue', 'current'), 'current.current')));
 		$templateMgr->assign('helpTopicId', 'user.currentAndArchives');
 		// consider public identifiers
@@ -88,10 +90,8 @@ class IssueHandler extends Handler {
 
 		$templateMgr =& TemplateManager::getManager();
 		$this->_setupIssueTemplate($request, $issue, ($showToc == 'showToc') ? true : false);
-		$templateMgr->assign('issueId', $issue->getBestIssueId());
+		if ($issue) $templateMgr->assign('issueId', $issue->getBestIssueId());
 
-		// Display creative commons logo/licence if enabled
-		$templateMgr->assign('displayCreativeCommons', $journal->getSetting('includeCreativeCommons'));
 		$templateMgr->assign('pageHierarchy', array(array($request->url(null, 'issue', 'archive'), 'archive.archives')));
 		$templateMgr->assign('helpTopicId', 'user.currentAndArchives');
 		// consider public identifiers
@@ -290,7 +290,7 @@ class IssueHandler extends Handler {
 		}
 
 		// Invalid issue id, redirect to current issue
-		if (!$issue) $request->redirect(null, null, 'current');
+		if (!$issue || !$this->_isVisibleIssue($issue, $journalId)) $request->redirect(null, null, 'current');
 
 		$this->setIssue($issue);
 
@@ -400,6 +400,19 @@ class IssueHandler extends Handler {
 	}
 
 	/**
+	 * Given an issue and journal id, return whether the current user can view the issue in the journal
+	 * @param $issue object The issue to display
+	 * @param $journalId int The id of the journal
+	 */
+	function _isVisibleIssue($issue, $journalId) {
+		if (isset($issue) && ($issue->getPublished() || Validation::isEditor($journalId) || Validation::isLayoutEditor($journalId) || Validation::isProofreader($journalId)) && $issue->getJournalId() == $journalId) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
 	 * Given an issue, set up the template with all the required variables for
 	 * issues/view.tpl to function properly (i.e. current issue and view issue).
 	 * @param $issue object The issue to display
@@ -411,7 +424,7 @@ class IssueHandler extends Handler {
 		$journal =& $request->getJournal();
 		$journalId = $journal->getId();
 		$templateMgr =& TemplateManager::getManager();
-		if (isset($issue) && ($issue->getPublished() || Validation::isEditor($journalId) || Validation::isLayoutEditor($journalId) || Validation::isProofreader($journalId)) && $issue->getJournalId() == $journalId) {
+		if (IssueHandler::_isVisibleIssue($issue, $journalId)) {
 
 			$issueHeadingTitle = $issue->getIssueIdentification(false, true);
 			$issueCrumbTitle = $issue->getIssueIdentification(false, true);
@@ -498,7 +511,7 @@ class IssueHandler extends Handler {
 			$issueHeadingTitle = __('archive.issueUnavailable');
 		}
 
-		if ($styleFileName = $issue->getStyleFileName()) {
+		if ($issue && $styleFileName = $issue->getStyleFileName()) {
 			import('classes.file.PublicFileManager');
 			$publicFileManager = new PublicFileManager();
 			$templateMgr->addStyleSheet(

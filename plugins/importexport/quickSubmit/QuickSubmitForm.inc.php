@@ -3,8 +3,8 @@
 /**
  * @file plugins/importexport/quickSubmit/QuickSubmitForm.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class QuickSubmitForm
@@ -242,7 +242,7 @@ class QuickSubmitForm extends Form {
 
 		// Set some default values so the ArticleDAO doesn't complain when adding this article
 		$article->setDateSubmitted(Core::getCurrentDate());
-		$article->setStatus(STATUS_PUBLISHED);
+		$article->setStatus($this->getData('destination') == 'queue' ? STATUS_QUEUED : STATUS_PUBLISHED);
 		$article->setSubmissionProgress(0);
 		$article->stampStatusModified();
 		$article->setCurrentRound(1);
@@ -255,6 +255,7 @@ class QuickSubmitForm extends Form {
 		$articleId = $article->getId();
 
 		// Add authors
+		$authorDao =& DAORegistry::getDAO('AuthorDAO'); /* @var $authorDao AuthorDAO */
 		$authors = $this->getData('authors');
 		for ($i=0, $count=count($authors); $i < $count; $i++) {
 			if ($authors[$i]['authorId'] > 0) {
@@ -286,11 +287,14 @@ class QuickSubmitForm extends Form {
 				$author->setSequence($authors[$i]['seq']);
 
 				if ($isExistingAuthor == false) {
-					$authorDao =& DAORegistry::getDAO('AuthorDAO'); /* @var $authorDao AuthorDAO */
 					$authorDao->insertAuthor($author);
 				}
 			}
 		}
+
+		// Setup default copyright/license metadata after status is set and authors are attached.
+		$article->initializePermissions();
+		$articleDao->updateLocaleFields($article);
 
 		// Add the submission files as galleys
 		import('classes.file.TemporaryFileManager');
@@ -478,11 +482,19 @@ class QuickSubmitForm extends Form {
 
 		if ($issue && $issue->getPublished()) {
 			$submission->setStatus(STATUS_PUBLISHED);
+			if ($publishedArticle && !$publishedArticle->getDatePublished()) {
+				$publishedArticle->setDatePublished($issue->getDatePublished());
+			}
 		} else {
 			$submission->setStatus(STATUS_QUEUED);
 		}
 
 		$sectionEditorSubmissionDao->updateSectionEditorSubmission($submission);
+		// Call initialize permissions again to check if copyright year needs to be initialized.
+		$articleDao =& DAORegistry::getDAO('ArticleDAO');
+		$article = $articleDao->getArticle($articleId);
+		$article->initializePermissions();
+		$articleDao->updateLocaleFields($article);
 	}
 }
 

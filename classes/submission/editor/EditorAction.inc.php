@@ -3,8 +3,8 @@
 /**
  * @file classes/submission/editor/EditorAction.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class EditorAction
@@ -31,7 +31,7 @@ class EditorAction extends SectionEditorAction {
 	 */
 	function assignEditor($articleId, $sectionEditorId, $isEditor, $send, $request) {
 		$editorSubmissionDao =& DAORegistry::getDAO('EditorSubmissionDAO');
-		$editAssignmentDao =& DAORegistry::getDAO('EditAssignmentDAO');
+		$editAssignmentDao =& DAORegistry::getDAO('EditAssignmentDAO'); /* @var $editAssignmentDao EditAssignmentDAO */
 		$userDao =& DAORegistry::getDAO('UserDAO');
 
 		$user =& $request->getUser();
@@ -50,7 +50,7 @@ class EditorAction extends SectionEditorAction {
 				$email->send($request);
 			}
 
-			$editAssignment = new EditAssignment();
+			$editAssignment = $editAssignmentDao->newDataObject();
 			$editAssignment->setArticleId($articleId);
 			$editAssignment->setCanEdit(1);
 			$editAssignment->setCanReview(1);

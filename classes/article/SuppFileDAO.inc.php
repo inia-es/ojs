@@ -3,8 +3,8 @@
 /**
  * @file classes/article/SuppFileDAO.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class SuppFileDAO
@@ -82,7 +82,7 @@ class SuppFileDAO extends DAO {
 				LEFT JOIN published_articles pa ON s.article_id = pa.article_id ';
 		if (is_null($settingValue)) {
 			$sql .= 'LEFT JOIN article_supp_file_settings sfs ON s.supp_id = sfs.supp_id AND sfs.setting_name = ?
-				WHERE	(sfs.setting_value IS NULL OR sfs.setting_value = "")';
+				WHERE	(sfs.setting_value IS NULL OR sfs.setting_value = \'\')';
 		} else {
 			$params[] = $settingValue;
 			$sql .= 'INNER JOIN article_supp_file_settings sfs ON s.supp_id = sfs.supp_id

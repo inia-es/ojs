@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/usageStats/UsageStatsLoader.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class UsageStatsLoader
@@ -34,17 +34,12 @@ class UsageStatsLoader extends FileLoader {
 	/** @var $_journalsByPath array */
 	var $_journalsByPath;
 
-	/** @var $_baseSystemUrl string */
-	var $_baseSystemUrl;
-
-	/** @var $_baseSystemEscapedPath string */
-	var $_baseSystemEscapedPath;
-
 	/** @var $_autoStage string */
 	var $_autoStage;
 
 	/** @var $_externalLogFiles string */
 	var $_externalLogFiles;
+
 
 	/**
 	 * Constructor.
@@ -73,50 +68,55 @@ class UsageStatsLoader extends FileLoader {
 
 		parent::FileLoader($args);
 
-		$this->_baseSystemUrl = Config::getVar('general', 'base_url');
-		$this->_baseSystemEscapedPath = str_replace('/', '\/', parse_url($this->_baseSystemUrl, PHP_URL_PATH));
+		if ($plugin->getEnabled()) {
+			// Load the metric type constant.
+			PluginRegistry::loadCategory('reports');
 
-		// Load the metric type constant.
-		PluginRegistry::loadCategory('reports');
+			$geoLocationTool =& StatisticsHelper::getGeoLocationTool();
+			$this->_geoLocationTool =& $geoLocationTool;
 
-		$geoLocationTool =& StatisticsHelper::getGeoLocationTool();
-		$this->_geoLocationTool =& $geoLocationTool;
+			$plugin->import('UsageStatsTemporaryRecordDAO');
+			$statsDao = new UsageStatsTemporaryRecordDAO();
+			DAORegistry::registerDAO('UsageStatsTemporaryRecordDAO', $statsDao);
 
-		$plugin->import('UsageStatsTemporaryRecordDAO');
-		$statsDao = new UsageStatsTemporaryRecordDAO();
-		DAORegistry::registerDAO('UsageStatsTemporaryRecordDAO', $statsDao);
+			$this->_counterRobotsListFile = $this->_getCounterRobotListFile();
 
-		$this->_counterRobotsListFile = $this->_getCounterRobotListFile();
+			$journalDao =& DAORegistry::getDAO('JournalDAO'); /* @var $journalDao JournalDAO */
+			$journalFactory =& $journalDao->getJournals(); /* @var $journalFactory DAOResultFactory */
+			$journalsByPath = array();
+			while ($journal =& $journalFactory->next()) { /* @var $journal Journal */
+				$journalsByPath[$journal->getPath()] =& $journal;
+			}
+			$this->_journalsByPath = $journalsByPath;
 
-		$journalDao =& DAORegistry::getDAO('JournalDAO'); /* @var $journalDao JournalDAO */
-		$journalFactory =& $journalDao->getJournals(); /* @var $journalFactory DAOResultFactory */
-		$journalsByPath = array();
-		while ($journal =& $journalFactory->next()) { /* @var $journal Journal */
-			$journalsByPath[$journal->getPath()] =& $journal;
-		}
-		$this->_journalsByPath = $journalsByPath;
+			$this->checkFolderStructure(true);
 
-		$this->checkFolderStructure(true);
+			if ($this->_autoStage) {
+				// Copy all log files to stage directory, except the current day one.
+				$fileMgr = new FileManager();
+				$logFiles = array();
+				$logsDirFiles =  glob($plugin->getUsageEventLogsPath() . DIRECTORY_SEPARATOR . '*');
 
-		if ($this->_autoStage) {
-			// Copy all log files to stage directory, except the current day one.
-			$fileMgr = new FileManager();
-			$logsDirFiles =  glob($plugin->getUsageEventLogsPath() . DIRECTORY_SEPARATOR . '*');
-			$processingDirFiles = glob($this->getProcessingPath() . DIRECTORY_SEPARATOR . '*');
-
-			if (is_array($logsDirFiles) && is_array($processingDirFiles)) {
 				// It's possible that the processing directory have files that
 				// were being processed but the php process was stopped before
 				// finishing the processing. Just copy them to the stage directory too.
-				$dirFiles = array_merge($logsDirFiles, $processingDirFiles);
-				foreach ($dirFiles as $filePath) {
+				$processingDirFiles = glob($this->getProcessingPath() . DIRECTORY_SEPARATOR . '*');
+
+				if (is_array($logsDirFiles)) {
+					$logFiles = array_merge($logFiles, $logsDirFiles);
+				}
+
+				if (is_array($processingDirFiles)) {
+					$logFiles = array_merge($logFiles, $processingDirFiles);
+				}
+
+				foreach ($logFiles as $filePath) {
 					// Make sure it's a file.
 					if ($fileMgr->fileExists($filePath)) {
 						// Avoid current day file.
 						$filename = pathinfo($filePath, PATHINFO_BASENAME);
 						$currentDayFilename = $plugin->getUsageEventCurrentDayLogName();
 						if ($filename == $currentDayFilename) continue;
-
 						if ($fileMgr->copyFile($filePath, $this->getStagePath() . DIRECTORY_SEPARATOR . $filename)) {
 							$fileMgr->deleteFile($filePath);
 						}
@@ -127,13 +127,34 @@ class UsageStatsLoader extends FileLoader {
 	}
 
 	/**
+	 * @see FileLoader::getName()
+	 */
+	function getName() {
+		return __('plugins.generic.usageStats.usageStatsLoaderName');
+	}
+
+	/**
+	 * @see FileLoader::executeActions()
+	 */
+	function executeActions() {
+		$plugin =& $this->_plugin;
+		if (!$plugin->getEnabled()) {
+			$this->addExecutionLogEntry(__('plugins.generic.usageStats.openFileFailed'), SCHEDULED_TASK_MESSAGE_TYPE_WARNING);
+			return true;
+		}
+
+		return parent::executeActions();
+	}
+
+	/**
 	 * @see FileLoader::processFile()
 	 */
-	function processFile($filePath) {
+	function processFile($filePath, &$errorMsg) {
 		$fhandle = fopen($filePath, 'r');
 		$geoTool = $this->_geoLocationTool;
 		if (!$fhandle) {
-			throw new Exception(__('plugins.generic.usageStats.openFileFailed', array('file' => $filePath)));
+			$errorMsg = __('plugins.generic.usageStats.openFileFailed', array('file' => $filePath));
+			return false;
 		}
 
 		$loadId = basename($filePath);
@@ -149,12 +170,13 @@ class UsageStatsLoader extends FileLoader {
 
 		while(!feof($fhandle)) {
 			$lineNumber++;
-			$line = fgets($fhandle);
-			if ($line == '') continue;
+			$line = trim(fgets($fhandle));
+			if (empty($line) || substr($line, 0, 1) === "#") continue; // Spacing or comment lines.
 			$entryData = $this->_getDataFromLogEntry($line);
 			if (!$this->_isLogEntryValid($entryData, $lineNumber)) {
-				throw new Exception(__('plugins.generic.usageStats.invalidLogEntry',
-					array('file' => $filePath, 'lineNumber' => $lineNumber)));
+				$errorMsg = __('plugins.generic.usageStats.invalidLogEntry',
+					array('file' => $filePath, 'lineNumber' => $lineNumber));
+				return false;
 			}
 
 			// Avoid internal apache requests.
@@ -171,39 +193,13 @@ class UsageStatsLoader extends FileLoader {
 			// Avoid bots.
 			if (Core::isUserAgentBot($entryData['userAgent'], $this->_counterRobotsListFile)) continue;
 
-			list($assocId, $assocType) = $this->_getAssocFromUrl($entryData['url']);
+			list($assocId, $assocType) = $this->_getAssocFromUrl($entryData['url'], $filePath, $lineNumber);
 			if(!$assocId || !$assocType) continue;
 
 			list($countryCode, $cityName, $region) = $geoTool->getGeoLocation($entryData['ip']);
 			$day = date('Ymd', $entryData['date']);
 
-			// Check downloaded file type, if any.
-			$galley = null;
-			$type = null;
-			switch($assocType) {
-				case ASSOC_TYPE_GALLEY:
-					$articleGalleyDao =& DAORegistry::getDAO('ArticleGalleyDAO'); /* @var $articleGalleyDao ArticleGalleyDAO */
-					$galley =& $articleGalleyDao->getGalley($assocId);
-					break;
-				case ASSOC_TYPE_ISSUE_GALLEY;
-					$issueGalleyDao =& DAORegistry::getDAO('IssueGalleyDAO'); /* @var $issueGalleyDao IssueGalleyDAO */
-					$galley =& $issueGalleyDao->getGalley($assocId);
-					break;
-			}
-
-			if ($galley && !is_a($galley, 'ArticleGalley') && !is_a($galley, 'IssueGalley')) {
-				// This object id was tested before, why
-				// it is not the type we expect now?
-				assert(false);
-			} else if ($galley) {
-				if ($galley->isPdfGalley()) {
-					$type = STATISTICS_FILE_TYPE_PDF;
-				} else if (is_a($galley, 'ArticleGalley') && $galley->isHtmlGalley()) {
-					$type = STATISTICS_FILE_TYPE_HTML;
-				} else {
-					$type = STATISTICS_FILE_TYPE_OTHER;
-				}
-			}
+			$type = $this->_getFileType($assocType, $assocId);
 
 			// Implement double click filtering.
 			$entryHash = $assocType . $assocId . $entryData['ip'];
@@ -230,19 +226,22 @@ class UsageStatsLoader extends FileLoader {
 				if ($secondsBetweenRequests < $timeFilter) {
 					// We have to store the last access,
 					// so we delete the most recent one.
-					$statsDao->deleteRecord($assocType, $assocId, $loadId);
+					$statsDao->deleteRecord($assocType, $assocId, $lastInsertedEntries[$entryHash], $loadId);
 				}
 			}
 
 			$lastInsertedEntries[$entryHash] = $entryData['date'];
-			$statsDao->insert($assocType, $assocId, $day, $countryCode, $region, $cityName, $type, $loadId);
+			$statsDao->insert($assocType, $assocId, $day, $entryData['date'], $countryCode, $region, $cityName, $type, $loadId);
 		}
 
 		fclose($fhandle);
-		$loadResult = $this->_loadData($loadId);
+		$loadResult = $this->_loadData($loadId, $errorMsg);
 		$statsDao->deleteByLoadId($loadId);
 
 		if (!$loadResult) {
+			// Improve the error message.
+			$errorMsg = __('plugins.generic.usageStats.loadDataError',
+				array('file' => $filePath, 'error' => $errorMsg));
 			return FILE_LOADER_RETURN_TO_STAGING;
 		} else {
 			return true;
@@ -333,33 +332,37 @@ class UsageStatsLoader extends FileLoader {
 	 * Get the assoc type and id of the object that
 	 * is accessed through the passed url.
 	 * @param $url string
+	 * @param $filePath string
+	 * @param $lineNumber int
 	 * @return array
 	 */
-	function _getAssocFromUrl($url) {
+	function _getAssocFromUrl($url, $filePath, $lineNumber) {
 		// Check the passed url.
 		$assocId = $assocType = $journalId = false;
 		$expectedPageAndOp = $this->_getExpectedPageAndOp();
 
-		// Remove base system url from url, if any.
-		$url = str_replace($this->_baseSystemUrl, '', $url);
+		$pathInfoDisabled = Config::getVar('general', 'disable_path_info');
 
-		// If url don't have the entire protocol and host part,
-		// remove any possible base url path from url.
-		$url = preg_replace('/^' . $this->_baseSystemEscapedPath . '/', '', $url);
-
-		// Remove possible index.php page from url.
-		$url = str_replace('/index.php', '', $url);
-
-		// Check whether it's path info or not.
-		$pathInfo = parse_url($url, PHP_URL_PATH);
-		$isPathInfo = false;
-		if ($pathInfo) {
-			$isPathInfo = true;
+		// Apache and ojs log files comes with complete or partial
+		// base url, remove it so system can retrieve path, page,
+		// operation and args.
+		$url = Core::removeBaseUrl($url);
+		if ($url) {
+			$contextPaths = Core::getContextPaths($url, !$pathInfoDisabled);
+			$page = Core::getPage($url, !$pathInfoDisabled);
+			$operation = Core::getOp($url, !$pathInfoDisabled);
+			$args = Core::getArgs($url, !$pathInfoDisabled);
+		} else {
+			// Could not remove the base url, can't go on.
+			$this->addExecutionLogEntry(__('plugins.generic.usageStats.removeUrlError',
+				array('file' => $filePath, 'lineNumber' => $lineNumber)), SCHEDULED_TASK_MESSAGE_TYPE_WARNING);
+			return array(false, false);
 		}
 
-		$contextPaths = Core::getContextPaths($url, $isPathInfo);
-		$page = Core::getPage($url, $isPathInfo);
-		$operation = Core::getOp($url, $isPathInfo);
+		// See bug #8698#.
+		if (is_array($contextPaths) && !$page && $operation == 'index') {
+			$page = 'index';
+		}
 
 		if (empty($contextPaths) || !$page || !$operation) return array(false, false);
 
@@ -379,7 +382,6 @@ class UsageStatsLoader extends FileLoader {
 
 		if ($pageAndOpMatch) {
 			// Get the assoc id inside the passed url.
-			$args = Core::getArgs($url, $isPathInfo);
 			if (empty($args)) {
 				if ($page == 'index' && $operation == 'index') {
 					// Can be a journal index page access,
@@ -491,13 +493,15 @@ class UsageStatsLoader extends FileLoader {
 					break;
 			}
 
-			// Don't count some view access operations for html or pdf galley,
+			// Don't count some view access operations for pdf galleys,
 			// otherwise we would be counting access before user really
-			// access the object. If user really access the object, a download
-			// operation will be also logged and that's the one we have to count.
-			$articleViewAccessPageAndOp = array('article/view', 'article/viewArticle', 'article/viewFile');
+			// access the object. If user really access the object, a download or
+			// viewFile operation will be also logged and that's the one we have
+			// to count.
+			$articleViewAccessPageAndOp = array('article/view', 'article/viewArticle');
+
 			if (in_array($workingPageAndOp, $articleViewAccessPageAndOp) && $assocType == ASSOC_TYPE_GALLEY &&
-			isset($galley) && $galley && ($galley->isHtmlGalley() || $galley->isPdfGalley())) {
+			isset($galley) && $galley && ($galley->isPdfGalley())) {
 				$assocId = $assocType = false;
 			}
 		}
@@ -554,14 +558,71 @@ class UsageStatsLoader extends FileLoader {
 	}
 
 	/**
+	 * Get the file type of the object represented
+	 * by the passed assoc type and id.
+	 * @param $assocType int
+	 * @param $assocId int
+	 * @return int One of the STATISTICS_FILE_TYPE... constants value.
+	 */
+	function _getFileType($assocType, $assocId) {
+		$file = null;
+		$type = null;
+
+		// Get the file.
+		switch($assocType) {
+			case ASSOC_TYPE_GALLEY:
+				$articleGalleyDao =& DAORegistry::getDAO('ArticleGalleyDAO'); /* @var $articleGalleyDao ArticleGalleyDAO */
+				$file =& $articleGalleyDao->getGalley($assocId);
+				break;
+			case ASSOC_TYPE_ISSUE_GALLEY;
+				$issueGalleyDao =& DAORegistry::getDAO('IssueGalleyDAO'); /* @var $issueGalleyDao IssueGalleyDAO */
+				$file =& $issueGalleyDao->getGalley($assocId);
+				break;
+			case ASSOC_TYPE_SUPP_FILE:
+				$suppFileDao =& DAORegistry::getDAO('SuppFileDAO'); /* @var $suppFileDao SuppFileDAO */
+				$file =& $suppFileDao->getSuppFile($assocId);
+				break;
+		}
+
+		if ($file) {
+			if (is_a($file, 'SuppFile')) {
+				switch($file->getFileType()) {
+					case 'application/pdf':
+						$type = STATISTICS_FILE_TYPE_PDF;
+						break;
+					case 'text/html':
+						$type = STATISTICS_FILE_TYPE_HTML;
+						break;
+					default:
+						$type = STATISTICS_FILE_TYPE_OTHER;
+					break;
+				}
+			}
+
+			if (is_a($file, 'ArticleGalley') || is_a($file, 'IssueGalley')) {
+				if ($file->isPdfGalley()) {
+					$type = STATISTICS_FILE_TYPE_PDF;
+				} else if (is_a($file, 'ArticleGalley') && $file->isHtmlGalley()) {
+					$type = STATISTICS_FILE_TYPE_HTML;
+				} else {
+					$type = STATISTICS_FILE_TYPE_OTHER;
+				}
+			}
+		}
+
+		return $type;
+	}
+
+	/**
 	 * Load the entries inside the temporary database associated with
 	 * the passed load id to the metrics table.
 	 * @param $loadId string The current load id.
 	 * file path.
+	 * @param $errorMsg string
 	 * @return boolean Whether or not the process
 	 * was successful.
 	 */
-	function _loadData($loadId) {
+	function _loadData($loadId, &$errorMsg) {
 		$statsDao =& DAORegistry::getDAO('UsageStatsTemporaryRecordDAO'); /* @var $statsDao UsageStatsTemporaryRecordDAO */
 		$metricsDao =& DAORegistry::getDAO('MetricsDAO'); /* @var $metricsDao MetricsDAO */
 		$metricsDao->purgeLoadBatch($loadId);
@@ -569,7 +630,9 @@ class UsageStatsLoader extends FileLoader {
 		while ($record =& $statsDao->getNextByLoadId($loadId)) {
 			$record['metric_type'] = OJS_METRIC_TYPE_COUNTER;
 			$errorMsg = null;
-			$metricsDao->insertRecord($record, $errorMsg);
+			if (!$metricsDao->insertRecord($record, $errorMsg)) {
+				return false;
+			}
 		}
 
 		return true;

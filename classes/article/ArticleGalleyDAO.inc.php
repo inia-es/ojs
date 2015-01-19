@@ -3,8 +3,8 @@
 /**
  * @file classes/article/ArticleGalleyDAO.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class ArticleGalleyDAO
@@ -30,12 +30,44 @@ class ArticleGalleyDAO extends DAO {
 	}
 
 	/**
+	 * Get galley objects cache.
+	 * @return GenericCache
+	 */
+	function &_getGalleyCache() {
+		if (!isset($this->galleyCache)) {
+			$cacheManager =& CacheManager::getManager();
+			$this->galleyCache =& $cacheManager->getObjectCache('galley', 0, array(&$this, '_galleyCacheMiss'));
+		}
+		return $this->galleyCache;
+	}
+
+	/**
+	 * Callback when there is no object in cache.
+	 * @param $cache GenericCache
+	 * @param $id int The wanted object id.
+	 * @return ArticleGalley
+	 */
+	function &_galleyCacheMiss(&$cache, $id) {
+		$galley =& $this->getGalley($id, null, false);
+		$cache->setCache($id, $galley);
+		return $galley;
+	}
+
+	/**
 	 * Retrieve a galley by ID.
 	 * @param $galleyId int
 	 * @param $articleId int optional
+	 * @param $useCache boolean optional
 	 * @return ArticleGalley
 	 */
-	function &getGalley($galleyId, $articleId = null) {
+	function &getGalley($galleyId, $articleId = null, $useCache = false) {
+		if ($useCache) {
+			$cache =& $this->_getGalleyCache();
+			$returner = $cache->get($galleyId);
+			if ($returner && $articleId != null && $articleId != $returner->getArticleId()) $returner = null;
+			return $returner;
+		}
+
 		$params = array((int) $galleyId);
 		if ($articleId !== null) $params[] = (int) $articleId;
 		$result =& $this->retrieve(
@@ -131,7 +163,7 @@ class ArticleGalleyDAO extends DAO {
 				LEFT JOIN published_articles pa ON g.article_id = pa.article_id ';
 		if (is_null($settingValue)) {
 			$sql .= 'LEFT JOIN article_galley_settings gs ON g.galley_id = gs.galley_id AND gs.setting_name = ?
-				WHERE	(gs.setting_value IS NULL OR gs.setting_value = "")';
+				WHERE	(gs.setting_value IS NULL OR gs.setting_value = \'\')';
 		} else {
 			$params[] = $settingValue;
 			$sql .= 'INNER JOIN article_galley_settings gs ON g.galley_id = gs.galley_id

@@ -3,8 +3,8 @@
 /**
  * @file plugins/reports/counter/CounterReportPlugin.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class CounterReportPlugin
@@ -363,7 +363,7 @@ class CounterReportPlugin extends ReportPlugin {
 	* Internal function to collect structures for output
 	*/
 	function _arrangeEntries($entries, $begin, $end) {
-		$ret=null;
+		$ret = array();
 
 		$i = 0;
 

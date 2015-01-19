@@ -3,8 +3,8 @@
 /**
  * @file pages/editor/IssueManagementHandler.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class IssueManagementHandler
@@ -911,6 +911,11 @@ class IssueManagementHandler extends EditorHandler {
 					$article->setStatus(STATUS_PUBLISHED);
 					$article->stampStatusModified();
 					$articleDao->updateArticle($article);
+					
+					// Call initialize permissions again to check if copyright year needs to be initialized.
+					$article->initializePermissions();
+					$articleDao->updateLocaleFields($article);
+				
 					if (!$articleSearchIndex) {
 						import('classes.search.ArticleSearchIndex');
 						$articleSearchIndex = new ArticleSearchIndex();

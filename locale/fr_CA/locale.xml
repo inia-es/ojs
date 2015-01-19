@@ -4,8 +4,8 @@
 <!--
   * locale.xml
   *
-  * Copyright (c) 2013 Simon Fraser University Library
-  * Copyright (c) 2003-2013 John Willinsky
+  * Copyright (c) 2013-2014 Simon Fraser University Library
+  * Copyright (c) 2003-2014 John Willinsky
   * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
   *
   * Localization strings for the fr_CA (Français (Canada)) locale.
@@ -55,6 +55,13 @@
 	<message key="navigation.infoForLibrarians">Pour les bibliothécaires</message>
 	<message key="navigation.infoForAuthors.long">Information pour les auteurs</message>
 	<message key="navigation.infoForLibrarians.long">Information pour les bibliothécaires</message>
+
+	<message key="navigation.journalHelpCenr">Aide offerte par le CEN-R </message>
+	<message key="navigation.journalHelpCenr.foire">Foire aux questions </message>
+	<message key="navigation.journalHelpCenr.aidememoire">Aide-mémoire </message>
+	<message key="navigation.journalHelpCenr.questions">Soumettre vos questions </message>
+	<message key="navigation.journalHelpCenr.feedback">Nous donner un feedback </message>
+	<message key="navigation.journalHelpCenrContact">Pour nous joindre </message>
 	
 	<!-- Article Queues -->
 	<message key="common.queue.long.submissionsUnassigned">Non assignées</message>
@@ -1115,6 +1122,4 @@ La validation peut échouer sur les URL de recherche qui nécessitent des formul
 	<message key="user.authorization.sectionAssignment">Vous tentez d'accéder à un article qui ne fait pas partie de votre section.</message>
 	<message key="user.authorization.invalidCopyditorSubmission">Dépôt du rédacteur non valide ou non requis!</message>
 	<message key="user.authorization.invalidSectionEditorSubmission">Dépôt du chef de rubrique non valide ou non requis!</message>
-	<message key="common.journal">Revue</message>
-	<message key="user.profile.profileImage">Image du profil</message>
 </locale>

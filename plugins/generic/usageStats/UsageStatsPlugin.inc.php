@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/usageStats/UsageStatsPlugin.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class UsageStatsPlugin
@@ -42,12 +42,9 @@ class UsageStatsPlugin extends GenericPlugin {
 	function register($category, $path) {
 		$success = parent::register($category, $path);
 
-		if ($this->getEnabled() && $success) {
-			// Register callbacks.
-			$app =& PKPApplication::getApplication();
-			$version = $app->getCurrentVersion();
+		HookRegistry::register('AcronPlugin::parseCronTab', array($this, 'callbackParseCronTab'));
 
-			HookRegistry::register('AcronPlugin::parseCronTab', array($this, 'callbackParseCronTab'));
+		if ($this->getEnabled() && $success) {
 			HookRegistry::register('PluginRegistry::loadCategory', array($this, 'callbackLoadCategory'));
 
 			// If the plugin will provide the access logs,

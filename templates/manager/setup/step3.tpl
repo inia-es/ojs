@@ -1,8 +1,8 @@
 {**
  * templates/manager/setup/step3.tpl
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * Step 3 of journal setup.
@@ -10,7 +10,7 @@
 {assign var="pageTitle" value="manager.setup.guidingSubmissions"}
 {include file="manager/setup/setupHeader.tpl"}
 
-<form id="setupForm" method="post" action="{url op="saveSetup" path="3"}">
+<form name="setupForm" id="setupForm" method="post" action="{url op="saveSetup" path="3"}">
 {include file="common/formErrors.tpl"}
 
 {if count($formLocales) > 1}
@@ -70,9 +70,10 @@
 
 <div class="separator"></div>
 
-<div id="authorCopyrightNotice">
-<h3>3.2 {translate key="manager.setup.authorCopyrightNotice"}</h3>
+<div id="permissions">
+<h3>3.2 {translate key="submission.permissions"}</h3>
 
+<h4>{translate key="manager.setup.authorCopyrightNotice"}</h4>
 {url|assign:"sampleCopyrightWordingUrl" page="information" op="sampleCopyrightWording"}
 <p>{translate key="manager.setup.authorCopyrightNoticeDescription" sampleCopyrightWordingUrl=$sampleCopyrightWordingUrl}</p>
 
@@ -80,22 +81,79 @@
 
 <table width="100%" class="data">
 	<tr valign="top">
-		<td width="5%" class="label">
-			<input type="checkbox" name="copyrightNoticeAgree" id="copyrightNoticeAgree" value="1"{if $copyrightNoticeAgree} checked="checked"{/if} />
+		<td width="20%" class="label" rowspan="3">
+			{translate key="submission.copyrightHolder"}
 		</td>
-		<td width="95%" class="value"><label for="copyrightNoticeAgree">{translate key="manager.setup.authorCopyrightNoticeAgree"}</label>
+		<td width="80%" class="data">
+			<input type="radio" value="author" name="copyrightHolderType" {if $copyrightHolderType=="author"}checked="checked" {/if}id="copyrightHolderType-author" />&nbsp;<label for="copyrightHolderType-author">{translate key="user.role.author"}</label>
 		</td>
 	</tr>
 	<tr valign="top">
-		<td class="label">
-			<input type="checkbox" name="includeCreativeCommons" id="includeCreativeCommons" value="1"{if $includeCreativeCommons} checked="checked"{/if} />
+		<td class="data">
+			<input type="radio" value="journal" name="copyrightHolderType" {if $copyrightHolderType=="journal"}checked="checked" {/if}id="copyrightHolderType-journal" />&nbsp;<label for="copyrightHolderType-journal">{translate key="journal.journal"}</label> ({$currentJournal->getLocalizedTitle()|escape})
 		</td>
+	</tr>
+	<tr valign="top">
+		<td class="data">
+			<input type="radio" value="other" name="copyrightHolderType" {if $copyrightHolderType=="other"}checked="checked" {/if}id="copyrightHolderType-other" />&nbsp;<label for="copyrightHolderType-other">{translate key="common.other"}</label>&nbsp;&nbsp;<input type="text" name="copyrightHolderOther[{$formLocale|escape}]" id="copyrightHolderOther" value="{$copyrightHolderOther[$formLocale]|escape}" />
+		</td>
+	</tr>
+	<tr valign="top">
+		<td width="20%" class="label" rowspan="2">
+			{translate key="manager.setup.copyrightYearBasis"}
+		</td>
+		<td width="80%" class="data">
+			<input type="radio" value="issue" name="copyrightYearBasis" {if $copyrightYearBasis=="issue"}checked="checked" {/if}id="copyrightYearBasis-issue" />&nbsp;<label for="copyrightYearBasis-issue">{translate key="issue.issue"}</label> ({translate key="manager.setup.copyrightYearBasis.Issue"})
+		</td>
+	</tr>
+	<tr valign="top">
+		<td class="data">
+			<input type="radio" value="article" name="copyrightYearBasis" {if $copyrightYearBasis=="article"}checked="checked" {/if}id="copyrightYearBasis-article" />&nbsp;<label for="copyrightYearBasis-article">{translate key="article.article"}</label> ({translate key="manager.setup.copyrightYearBasis.Article"})
+		</td>
+	</tr>
+	<tr valign="top">
+		<td class="label">{translate key="manager.setup.permissions.priorAgreement"}</td>
+		<td class="label">
+			<input type="checkbox" name="copyrightNoticeAgree" id="copyrightNoticeAgree" value="1"{if $copyrightNoticeAgree} checked="checked"{/if} />&nbsp;<label for="copyrightNoticeAgree">{translate key="manager.setup.authorCopyrightNoticeAgree"}</label>
+		</td>
+	</tr>
+	<tr valign="top">
+		<td class="label">{translate key="manager.setup.permissions.display"}</td>
 		<td class="value">
-			<label for="includeCreativeCommons">{translate key="manager.setup.includeCreativeCommons"}</label>
+			<input type="checkbox" name="includeCopyrightStatement" id="includeCopyrightStatement" value="1"{if $includeCopyrightStatement} checked="checked"{/if} />&nbsp;<label for="includeCopyrightStatement">{translate key="manager.setup.includeCopyrightStatement"}</label>
+		</td>
+	</tr>
+	<tr valign="top">
+		<td class="label">{fieldLabel name=licenseURL key="submission.licenseURL"}</td>
+		<td class="value">
+			<select name="licenseURLSelect" id="licenseURLSelect" onchange="document.getElementById('licenseURL').value=document.getElementById('licenseURLSelect').options[document.getElementById('licenseURLSelect').selectedIndex].value; document.getElementById('licenseURL').readOnly=(document.getElementById('licenseURL').value==''?false:true);">
+				{assign var=foundCc value=0}
+				{foreach from=$ccLicenseOptions key=ccUrl item=ccNameKey}
+					<option {if $licenseURL == $ccUrl}selected="selected" {/if}value="{$ccUrl|escape}">{$ccNameKey|translate}</option>
+					{if $licenseURL == $ccUrl}
+						{assign var=foundCc value=1}
+					{/if}
+				{/foreach}
+				<option {if !$foundCc}selected="selected" {/if}value="">Other</option>
+			</select>
+			<br/>
+			<input type="text" name="licenseURL" id="licenseURL" value="{$licenseURL|escape}" {if $foundCc}readonly="readonly" {/if}size="40" maxlength="255" class="textField" />
+			<br/>
+			{translate key="manager.setup.licenseURLDescription"}
+		</td>
+	</tr>
+	<tr valign="top">
+		<td class="label">{translate key="manager.setup.permissions.display"}</td>
+		<td class="value">
+			<input type="checkbox" name="includeLicense" id="includeLicense" value="1"{if $includeLicense} checked="checked"{/if} />&nbsp;<label for="includeLicense">{translate key="manager.setup.includeLicense"}</label>
 		</td>
 	</tr>
 </table>
+
+<p>{translate key="manager.setup.resetPermissions.description"}</p>
+<p><input id="resetPermissionsButton" type="button" value="{translate key="manager.setup.resetPermissions"}" class="button" /></p>
 </div>
+
 <div class="separator"></div>
 
 <div id="competingInterests">
@@ -146,7 +204,7 @@
 			<span class="instruct">{translate key="manager.setup.disciplineDescription"}</span><br/>
 			<span class="instruct">{translate key="manager.setup.disciplineProvideExamples"}:</span>
 			<br />
-			<input type="text" name="metaDisciplineExamples[{$formLocale|escape}]" id="metaDisciplineExamples" value="{$metaDisciplineExamples[$formLocale]|escape}" size="60" maxlength="255" class="textField" />
+			<input type="text" name="metaDisciplineExamples[{$formLocale|escape}]" id="metaDisciplineExamples" value="{$metaDisciplineExamples[$formLocale]|escape}" size="60" class="textField" />
 			<br />
 			<span class="instruct">{translate key="manager.setup.disciplineExamples"}</span>
 		</td>
@@ -168,11 +226,11 @@
 			<table width="100%">
 				<tr valign="top">
 					<td width="10%">{fieldLabel name="metaSubjectClassTitle" key="common.title"}</td>
-					<td width="90%"><input type="text" name="metaSubjectClassTitle[{$formLocale|escape}]" id="metaSubjectClassTitle" value="{$metaSubjectClassTitle[$formLocale]|escape}" size="40" maxlength="255" class="textField" /></td>
+					<td width="90%"><input type="text" name="metaSubjectClassTitle[{$formLocale|escape}]" id="metaSubjectClassTitle" value="{$metaSubjectClassTitle[$formLocale]|escape}" size="40" class="textField" /></td>
 				</tr>
 				<tr valign="top">
 					<td width="10%">{fieldLabel name="metaSubjectClassUrl" key="common.url"}</td>
-					<td width="90%"><input type="text" name="metaSubjectClassUrl[{$formLocale|escape}]" id="metaSubjectClassUrl" value="{$metaSubjectClassUrl[$formLocale]|escape}" size="40" maxlength="255" class="textField" /></td>
+					<td width="90%"><input type="text" name="metaSubjectClassUrl[{$formLocale|escape}]" id="metaSubjectClassUrl" value="{$metaSubjectClassUrl[$formLocale]|escape}" size="40" class="textField" /></td>
 				</tr>
 			</table>
 			<span class="instruct">{translate key="manager.setup.subjectClassificationExamples"}</span>
@@ -194,7 +252,7 @@
 		<td class="value">
 			<span class="instruct">{translate key="manager.setup.subjectProvideExamples"}:</span>
 			<br />
-			<input type="text" name="metaSubjectExamples[{$formLocale|escape}]" id="metaSubjectExamples" value="{$metaSubjectExamples[$formLocale]|escape}" size="60" maxlength="255" class="textField" />
+			<input type="text" name="metaSubjectExamples[{$formLocale|escape}]" id="metaSubjectExamples" value="{$metaSubjectExamples[$formLocale]|escape}" size="60" class="textField" />
 			<br />
 			<span class="instruct">{translate key="manager.setup.subjectExamples"}</span>
 		</td>
@@ -219,7 +277,7 @@
 			<span class="instruct">{translate key="manager.setup.coverageDescription"}</span><br/>
 			<span class="instruct">{translate key="manager.setup.coverageGeoProvideExamples"}:</span>
 			<br />
-			<input type="text" name="metaCoverageGeoExamples[{$formLocale|escape}]" id="metaCoverageGeoExamples" value="{$metaCoverageGeoExamples[$formLocale]|escape}" size="60" maxlength="255" class="textField" />
+			<input type="text" name="metaCoverageGeoExamples[{$formLocale|escape}]" id="metaCoverageGeoExamples" value="{$metaCoverageGeoExamples[$formLocale]|escape}" size="60" class="textField" />
 			<br />
 			<span class="instruct">{translate key="manager.setup.coverageGeoExamples"}</span>
 		</td>
@@ -232,7 +290,7 @@
 		<td class="value">
 			<span class="instruct">{translate key="manager.setup.coverageChronProvideExamples"}:</span>
 			<br />
-			<input type="text" name="metaCoverageChronExamples[{$formLocale|escape}]" id="metaCoverageChronExamples" value="{$metaCoverageChronExamples[$formLocale]|escape}" size="60" maxlength="255" class="textField" />
+			<input type="text" name="metaCoverageChronExamples[{$formLocale|escape}]" id="metaCoverageChronExamples" value="{$metaCoverageChronExamples[$formLocale]|escape}" size="60" class="textField" />
 			<br />
 			<span class="instruct">{translate key="manager.setup.coverageChronExamples"}</span>
 		</td>
@@ -245,7 +303,7 @@
 		<td class="value">
 			<span class="instruct">{translate key="manager.setup.coverageResearchSampleProvideExamples"}:</span>
 			<br />
-			<input type="text" name="metaCoverageResearchSampleExamples[{$formLocale|escape}]" id="metaCoverageResearchSampleExamples" value="{$metaCoverageResearchSampleExamples[$formLocale]|escape}" size="60" maxlength="255" class="textField" />
+			<input type="text" name="metaCoverageResearchSampleExamples[{$formLocale|escape}]" id="metaCoverageResearchSampleExamples" value="{$metaCoverageResearchSampleExamples[$formLocale]|escape}" size="60" class="textField" />
 			<br />
 			<span class="instruct">{translate key="manager.setup.coverageResearchSampleExamples"}</span>
 		</td>
@@ -266,7 +324,7 @@
 		<td class="value">
 			<span class="instruct">{translate key="manager.setup.typeProvideExamples"}:</span>
 			<br />
-			<input type="text" name="metaTypeExamples[{$formLocale|escape}]" id="metaTypeExamples" value="{$metaTypeExamples[$formLocale]|escape}" size="60" maxlength="255" class="textField" />
+			<input type="text" name="metaTypeExamples[{$formLocale|escape}]" id="metaTypeExamples" value="{$metaTypeExamples[$formLocale]|escape}" size="60" class="textField" />
 			<br />
 			<span class="instruct">{translate key="manager.setup.typeExamples"}</span>
 		</td>
@@ -365,6 +423,48 @@
 				if (checkboxState !== toggleState) {
 					$metaCitationsSetupBox.toggle(300);
 				}
+			});
+		});
+		
+		function permissionsValues() {
+			perm = ':';
+			licenseNames = ["copyrightYearBasis", "copyrightHolderType"];
+			for (l = 0; l < licenseNames.length; l++) {
+				ele = document.getElementsByName(licenseNames[l]);
+				for (i = 0; i < ele.length; i++) {
+					if (ele[i].type == 'radio') {
+						if (ele[i].checked) {
+							perm += ele[i].value + ':';
+							break;
+						}
+					} else {
+						perm += ele[i].value + ':';
+					}
+				}
+			};
+			licenseIds = ["copyrightHolderOther", "licenseURL"];
+			for (l = 0; l < licenseIds.length; l++) {
+				ele = document.getElementById(licenseIds[l]);
+				if (ele) {
+					perm += ele.value + ':';
+				}
+			}
+			return perm;
+		}
+		var resetValues;
+		$(document).ready( function () {
+			resetValues = permissionsValues();
+			$('#resetPermissionsButton').click( function ( event ) {
+				if (resetValues == permissionsValues()) {
+					{/literal}
+					confirmAction('{url op="resetPermissions"}', '{translate|escape:"jsparam" key="manager.setup.confirmResetLicense"}');
+					{literal}
+				} else {
+					{/literal}
+					window.alert('{translate|escape:"jsparam" key="manager.setup.confirmResetLicenseChanged"}')
+					{literal}
+				}
+				event.preventDefault();
 			});
 		});
 	</script>{/literal}

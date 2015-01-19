@@ -3,8 +3,8 @@
 /**
  * @file classes/issue/IssueDAO.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class IssueDAO
@@ -117,7 +117,7 @@ class IssueDAO extends DAO {
 			FROM	issues i ';
 		if (is_null($settingValue)) {
 			$sql .= 'LEFT JOIN issue_settings ist ON i.issue_id = ist.issue_id AND ist.setting_name = ?
-				WHERE	(ist.setting_value IS NULL OR ist.setting_value = "")';
+				WHERE	(ist.setting_value IS NULL OR ist.setting_value = \'\')';
 		} else {
 			$params[] = $settingValue;
 			$sql .= 'INNER JOIN issue_settings ist ON i.issue_id = ist.issue_id
@@ -498,6 +498,7 @@ class IssueDAO extends DAO {
 		// Delete issue settings and issue
 		$this->update('DELETE FROM issue_settings WHERE issue_id = ?', $issueId);
 		$this->update('DELETE FROM issues WHERE issue_id = ?', $issueId);
+		$this->update('DELETE FROM custom_issue_orders WHERE issue_id = ?', $issueId);
 		$this->resequenceCustomIssueOrders($issue->getJournalId());
 
 		$this->flushCache();
@@ -628,7 +629,7 @@ class IssueDAO extends DAO {
 	 * Get unpublished issues organized by published date
 	 * @param $journalId int
 	 * @param $rangeInfo object DBResultRange
- 	 * @return issues ItemIterator
+	 * @return issues ItemIterator
 	 */
 	function &getUnpublishedIssues($journalId, $rangeInfo = null) {
 		$result =& $this->retrieveRange(

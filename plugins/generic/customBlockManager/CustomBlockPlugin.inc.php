@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/customBlockManager/CustomBlockPlugin.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @package plugins.generic.CustomBlockPlugin
@@ -38,6 +38,14 @@ class CustomBlockPlugin extends BlockPlugin {
 	function &getManagerPlugin() {
 		$plugin =& PluginRegistry::getPlugin('generic', $this->parentPluginName);
 		return $plugin;
+	}
+
+	/**
+	 * Override currentVersion to prevent upgrade and delete management.
+	 * @return boolean
+	 */
+	function getCurrentVersion() {
+		return false;
 	}
 
 	/**
@@ -170,6 +178,8 @@ class CustomBlockPlugin extends BlockPlugin {
 		$journal =& Request::getJournal();
 		if (!$journal) return '';
 
+		$id = 'customblock-'.preg_replace('/\W+/', '-', $this->blockName);
+		$templateMgr->assign('customBlockId', $id);
 		$templateMgr->assign('customBlockContent', $this->getSetting($journal->getId(), 'blockContent'));
 		return parent::getContents($templateMgr);
 

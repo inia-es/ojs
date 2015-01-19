@@ -4,8 +4,8 @@
 <!--
   * plugins/importexport/datacite/locale/pt_BR/common.xml
   *
-  * Copyright (c) 2013 Simon Fraser University Library
-  * Copyright (c) 2003-2013 John Willinsky
+  * Copyright (c) 2013-2014 Simon Fraser University Library
+  * Copyright (c) 2003-2014 John Willinsky
   * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
   *
   * Localization strings.
@@ -57,4 +57,8 @@
 	<message key="plugins.importexport.common.notification.exportSuccessful">Objetos selecionados exportados com sucesso para '{$param}'</message>
  
 	<message key="plugins.importexport.common.cliError">ERRO:</message>
+	<message key="plugins.importexport.common.settings.form.password.description">As senhas serão salvas em texto não cifrado.</message>
+	<message key="plugins.importexport.common.markRegistered">Marco registrado</message>
+	<message key="plugins.importexport.common.markRegisteredDescription">Clique neste botão para marcar os objetos registrados (se registrados previamente ou manualmente).</message>
+	<message key="plugins.importexport.common.export.unAvailable">Exportação de dados está atualmente desabilitada. Verifique os requisitos do plugin.</message>
 </locale>

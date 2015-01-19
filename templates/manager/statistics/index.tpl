@@ -1,8 +1,8 @@
 {**
  * templates/manager/statistics/index.tpl
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * Display the statistics & reporting page.
@@ -30,8 +30,9 @@
 		<li>&#187; <a href="{url op="report" path=$plugin->getName()|escape}">{$plugin->getDisplayName()|escape}</a></li>
 	{/foreach}
 	</ul>
-	
-	<p><a href="{url op="reportGenerator"}">{translate key="manager.statistics.reports.generateReport"}</a></p>	
+	{if !empty($availableMetricTypes)}	
+		<p><a href="{url op="reportGenerator"}">{translate key="manager.statistics.reports.generateReport"}</a></p>
+	{/if}
 </div>
 {include file="common/footer.tpl"}
 

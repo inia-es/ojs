@@ -3,8 +3,8 @@
 /**
  * @file plugins/pubIds/doi/DOIPubIdPlugin.inc.php
  *
- * Copyright (c) 2013 Simon Fraser University Library
- * Copyright (c) 2003-2013 John Willinsky
+ * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2003-2014 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class DOIPubIdPlugin
@@ -192,7 +192,7 @@ class DOIPubIdPlugin extends PubIdPlugin {
 				}
 
 				if ($article) {
- 					$doiSuffix .= '.' . $article->getId();
+					$doiSuffix .= '.' . $article->getId();
 				}
 
 				if ($galley) {
@@ -241,12 +241,7 @@ class DOIPubIdPlugin extends PubIdPlugin {
 	 * @see PubIdPlugin::getResolvingURL()
 	 */
 	function getResolvingURL($journalId, $pubId) {
-		// See ANSI/NISO Z39.84-2005, Appendix E. (Bug #8190)
-		$separatorIndex = String::strpos($pubId, '/');
-		assert($separatorIndex !== false); // Should contain a slash
-		$prefix = String::substr($pubId, 0, $separatorIndex);
-		$suffix = String::substr($pubId, $separatorIndex+1);
-		return 'http://dx.doi.org/' . $prefix . '/' . urlencode($suffix);
+		return 'http://dx.doi.org/'.$this->_doiURLEncode($pubId);
 	}
 
 	/**
@@ -302,8 +297,23 @@ class DOIPubIdPlugin extends PubIdPlugin {
 	 * @see PubIdPlugin::validatePubId()
 	 */
 	function validatePubId($pubId) {
-		$doiParts = explode('/', $pubId, 2);
-		return count($doiParts) == 2;
+		return preg_match('/^\d+(.\d+)+\//', $pubId);
+	}
+
+	/*
+	 * Private methods
+	 */
+
+	/**
+	 * Encode DOI according to ANSI/NISO Z39.84-2005, Appendix E.
+	 * @param $pubId string
+	 * @return string
+	 */
+	function _doiURLEncode($pubId) {
+		$search = array ('%', '"', '#', ' ', '<', '>', '{');
+		$replace = array ('%25', '%22', '%23', '%20', '%3c', '%3e', '%7b');
+		$pubId = str_replace($search, $replace, $pubId);
+		return $pubId;
 	}
 
 }

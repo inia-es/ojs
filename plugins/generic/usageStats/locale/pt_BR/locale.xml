@@ -2,15 +2,16 @@
 <!DOCTYPE locale SYSTEM "../../../../../lib/pkp/dtd/locale.dtd">
 
 <!--
-  * plugins/generic/usageStats/locale/en_US/locale.xml
+  * plugins/generic/usageStats/locale/pt_BR/locale.xml
   *
-  * Copyright (c) 2003-2013 John Willinsky
+  * Copyright (c) 2013-2014 Simon Fraser University Library
+  * Copyright (c) 2003-2014 John Willinsky
   * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
   *
   * Localization strings
   -->
 
-<locale name="en_US" full_name="U.S. English">
+<locale name="pt_BR" full_name="Português (Brasil)">
 	<message key="plugins.generic.usageStats.settings.logging">Opções de log de acessos</message>
 	<message key="plugins.generic.usageStats.settings.createLogFiles">Criar arquivos de log</message>
 	<message key="plugins.generic.usageStats.settings.createLogFiles.description">Ativar esta opção fará com que o plugin crie arquivos de log dentro da sua pasta de arquivos. Os arquivos devem ser usados para extração de dados estatísticos. Caso não deseje criar mais arquivos de log, deixe a opção desabilitada e use os arquivos de log do próprio servidor.</message>
@@ -28,4 +29,7 @@
 	
 	<message key="plugins.reports.usageStats.metricType">OJS/COUNTER</message>
 	<message key="plugins.reports.usageStats.metricType.full">Estatísticas Open Journal Systems (pronto para COUNTER)</message>
+	<message key="plugins.generic.usageStats.usageStatsLoaderName">Estatísticas de uso do carregador de arquivos</message>
+	<message key="plugins.generic.usageStats.removeUrlError">A linha {$lineNumber} do arquivo {$file} contém uma URL que o sistema não pode consegue remover a URL base.</message>
+	<message key="plugins.generic.usageStats.loadDataError">Não foi possível carregar os dados extraídos do arquivo {$file}. O erro foi: {$error}. O arquivo foi movido para o estágio novamente.</message>
 </locale>
