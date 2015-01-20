@@ -3,7 +3,7 @@
 	url = https://github.com/inia-es/pkp-lib.git
 [submodule "plugins/importexport/duracloud/lib/DuraCloud-PHP"]
 	path = plugins/importexport/duracloud/lib/DuraCloud-PHP
-	url = git@github.com/asmecher/DuraCloud-PHP
+	url = https://github.com/asmecher/DuraCloud-PHP
 [submodule "public/site"]
 	path = public/site
 	url = https://github.com/inia-es/ojs-public_site
