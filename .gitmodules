@@ -4,27 +4,6 @@
 [submodule "plugins/importexport/duracloud/lib/DuraCloud-PHP"]
 	path = plugins/importexport/duracloud/lib/DuraCloud-PHP
 	url = git@github.com/asmecher/DuraCloud-PHP
-[submodule "plugins/generic/AddEmailsFS"]
-	path = plugins/generic/AddEmailsFS
-	url = https://github.com/inia-es/plugin-addEmailsFS.git
-[submodule "plugins/generic/Archives"]
-	path = plugins/generic/Archives
-	url = https://github.com/inia-es/plugin-archives.git
-[submodule "plugins/generic/customizedSjar"]
-	path = plugins/generic/customizedSjar
-	url = https://github.com/inia-es/plugin-customizedSjar.git
-[submodule "plugins/generic/editorsEmails"]
-	path = plugins/generic/editorsEmails
-	url = https://github.com/inia-es/plugin-editorsEmails.git
-[submodule "plugins/generic/editorsEmailsFS"]
-	path = plugins/generic/editorsEmailsFS
-	url = https://github.com/inia-es/plugin-editorsEmailsFS.git
-[submodule "plugins/generic/journalTemplate"]
-	path = plugins/generic/journalTemplate
-	url = https://github.com/inia-es/plugin-journalTemplate.git
-[submodule "plugins/generic/UploadNotification"]
-	path = plugins/generic/UploadNotification
-	url = https://github.com/inia-es/plugin-uploadNotification.git
 [submodule "public/site"]
 	path = public/site
 	url = https://github.com/inia-es/ojs-public_site
@@ -34,3 +13,24 @@
 [submodule "public/journals/2"]
 	path = public/journals/2
 	url = https://github.com/inia-es/ojs-public_journals_fs
+[submodule "plugins/generic/AddEmailsFS"]
+	path = plugins/generic/AddEmailsFS
+	url = https://github.com/inia-es/plugin-addEmailsFS
+[submodule "plugins/generic/Archives"]
+	path = plugins/generic/Archives
+	url = https://github.com/inia-es/plugin-archives
+[submodule "plugins/generic/customizedSjar"]
+	path = plugins/generic/customizedSjar
+	url = https://github.com/inia-es/plugin-customizedSjar
+[submodule "plugins/generic/editorsEmails"]
+	path = plugins/generic/editorsEmails
+	url = https://github.com/inia-es/plugin-editorsEmails
+[submodule "plugins/generic/editorsEmailsFS"]
+	path = plugins/generic/editorsEmailsFS
+	url = https://github.com/inia-es/plugin-editorsEmailsFS
+[submodule "plugins/generic/journalTemplate"]
+	path = plugins/generic/journalTemplate
+	url = https://github.com/inia-es/plugin-journalTemplate
+[submodule "plugins/generic/uploadNotification"]
+	path = plugins/generic/uploadNotification
+	url = https://github.com/inia-es/plugin-uploadNotification
