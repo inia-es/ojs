@@ -34,3 +34,6 @@
 [submodule "plugins/generic/uploadNotification"]
 	path = plugins/generic/uploadNotification
 	url = https://github.com/inia-es/plugin-uploadNotification
+[submodule "plugins/generic/pdfJsViewer"]
+	path = plugins/generic/pdfJsViewer
+	url = git://github.com/pkp/pdfJsViewer

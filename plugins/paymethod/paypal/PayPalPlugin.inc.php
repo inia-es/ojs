@@ -3,7 +3,7 @@
 /**
  * @file plugins/paymethod/paypal/PayPalPlugin.inc.php
  *
- * Copyright (c) 2013-2014 Simon Fraser University Library
+ * Copyright (c) 2013-2015 Simon Fraser University Library
  * Copyright (c) 2006-2009 Gunther Eysenbach, Juan Pablo Alperin, MJ Suhonos
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
@@ -169,7 +169,7 @@ class PayPalPlugin extends PaymethodPlugin {
 			$contactEmail = $journal->getSetting('contactEmail');
 		}
 		$mail = new MailTemplate('PAYPAL_INVESTIGATE_PAYMENT');
-		$mail->setFrom($contactEmail, $contactName);
+		$mail->setReplyTo(null);
 		$mail->addRecipient($contactEmail, $contactName);
 
 		$paymentStatus = $request->getUserVar('payment_status');

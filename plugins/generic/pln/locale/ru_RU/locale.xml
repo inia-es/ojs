@@ -4,8 +4,8 @@
 <!--
   * plugins/generic/pln/locale/ru_RU/locale.xml
   *
-  * Copyright (c) 2013-2014 Simon Fraser University Library
-  * Copyright (c) 2003-2014 John Willinsky
+  * Copyright (c) 2013-2015 Simon Fraser University Library
+  * Copyright (c) 2003-2015 John Willinsky
   * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
   *
   * Localization strings for the ru_RU (Russian) locale.
@@ -28,7 +28,6 @@
 	<message key="plugins.generic.pln.settings.refresh">Обновить</message>
 	<message key="plugins.generic.pln.settings.refresh_help">Если по какой-либо причине выше не показаны условия использования или вы знаете, что эти условия были изменены, щелкните на кнопке «Обновить» для обновления списка условий выше.</message>
 	
-	<message key="plugins.generic.pln.required.pln_network">Пожалуйста, выберите сеть PLN.</message>
 	<message key="plugins.generic.pln.required.object_type">Пожалуйста, выберите тип депонируемого объекта.</message>
 	<message key="plugins.generic.pln.required.object_threshold">Пожалуйста, выберите порог депонируемых объектов.</message>
 	<message key="plugins.generic.pln.required.terms_of_use_agreement">Принятие условий использования сети является обязательным для депонирования в PLN.</message>
@@ -64,5 +63,6 @@
 	<message key="plugins.generic.pln.notifications.http_error">Произошла ошибка при подключении к PKP PLN — пожалуйста, свяжитесь с системным администратором.</message>
 	<message key="plugins.generic.pln.notifications.terms_updated">Условия использования PKP PLN были обновлены. Принятие новых условий является обязательным для продолжения депонирования.</message>
 	<message key="plugins.generic.pln.notifications.curl_missing">Для работы необходимо включить поддержку CURL.</message>
-	<message key="plugins.generic.pln.notifications.zip_missing">Для работы необходимо вклчють поддержку ZipArchive.</message>
+	<message key="plugins.generic.pln.notifications.zip_missing">Для работы необходимо включить поддержку ZipArchive.</message>
+	<message key="plugins.generic.pln.notifications.issn_setting">У вашего журнала должен быть ISSN до того, как вы примение условия использования. Вы можете ввести ISSN на странице «Настройка журнала». После того как будет введен ISSN журнал, условия использования будут показаны ниже.</message>
 </locale>
