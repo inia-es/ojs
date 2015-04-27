@@ -36,7 +36,7 @@
 	url = https://github.com/inia-es/plugin-uploadNotification
 [submodule "plugins/generic/pdfJsViewer"]
 	path = plugins/generic/pdfJsViewer
-	url = git://github.com/pkp/pdfJsViewer
+	url = https://github.com/pkp/pdfJsViewer
 [submodule "plugins/generic/clamav"]
 	path = plugins/generic/clamav
 	url = https://github.com/ned14/ClamAV-Plugin-for-PKP-Open-Journal-Systems
