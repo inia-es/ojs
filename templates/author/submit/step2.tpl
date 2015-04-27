@@ -49,7 +49,15 @@
 </tr>
 {else}
 <tr valign="top">
-	<td colspan="2" class="nodata">{translate key="author.submit.noSubmissionFile"}</td>
+	<td colspan="2" class="nodata">
+		{if $smarty.session.hasVirus}
+			<span style="color:red;">
+				{$smarty.session.virusScanMsg|escape}
+			</span>
+		{else}
+			{translate key="author.submit.noSubmissionFile"}
+		{/if}
+	</td>
 </tr>
 {/if}
 </table>
