@@ -7,3 +7,4 @@ files
 .buildpath
 .settings
 *.swp
+cache/*
