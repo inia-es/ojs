@@ -86,7 +86,7 @@
 <table width="100%" class="data">
 	<tr>
 		<td>
-			<a href="http://revistas.inia.es/index.php/sjar/manager/files/information/Howsubmitrevisedversion.pdf">
+			<a href="http://revistas.inia.es/public_files/sjar/Howsubmitrevisedversion.pdf">
 				<strong><span style="font-family: 'Verdana','sans-serif'; color: #a20000; font-size: 12pt;">How to submit a revised version</span></strong>
 			</a>
 		</td>
