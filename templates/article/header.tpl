@@ -23,6 +23,15 @@
 
 	{include file="article/dublincore.tpl"}
 	{include file="article/googlescholar.tpl"}
+
+	{foreach from=$article->getGalleys() item=cc_galley}
+		{if $cc_galley->getFileType()=="application/pdf"}
+			<meta name="fulltext_pdf" content="{url page="article" op="download" path=$article->getBestArticleId($currentJournal)|to_array:$cc_galley->getBestGalleyId($currentJournal)}"/>	
+		{else}
+			<meta name="fulltext_html" content="{url page="article" op="view" path=$article->getBestArticleId($currentJournal)|to_array::$cc_galley->getBestGalleyId($currentJournal)}"/>
+		{/if>
+	{/foreach}
+
 	{call_hook name="Templates::Article::Header::Metadata"}
 
 	<link rel="stylesheet" href="{$baseUrl}/lib/pkp/styles/pkp.css" type="text/css" />
