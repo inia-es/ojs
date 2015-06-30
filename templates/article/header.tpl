@@ -28,8 +28,8 @@
 		{if $cc_galley->getFileType()=="application/pdf"}
 			<meta name="fulltext_pdf" content="{url page="article" op="download" path=$article->getBestArticleId($currentJournal)|to_array:$cc_galley->getBestGalleyId($currentJournal)}"/>	
 		{else}
-			<meta name="fulltext_html" content="{url page="article" op="view" path=$article->getBestArticleId($currentJournal)|to_array::$cc_galley->getBestGalleyId($currentJournal)}"/>
-		{/if>
+			<meta name="fulltext_html" content="{url page="article" op="view" path=$article->getBestArticleId($currentJournal)|to_array:$cc_galley->getBestGalleyId($currentJournal)}"/>
+		{/if}
 	{/foreach}
 
 	{call_hook name="Templates::Article::Header::Metadata"}
