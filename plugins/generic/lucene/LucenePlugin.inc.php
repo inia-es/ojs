@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/lucene/LucenePlugin.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class LucenePlugin
@@ -162,8 +162,10 @@ class LucenePlugin extends GenericPlugin {
 			$username = $this->getSetting(0, 'username');
 			$password = $this->getSetting(0, 'password');
 			$instId = $this->getSetting(0, 'instId');
+			$useProxySettings = $this->getSetting(0, 'useProxySettings');
+			if (!$useProxySettings) $useProxySettings = false;
 
-			$this->_solrWebService = new SolrWebService($searchHandler, $username, $password, $instId);
+			$this->_solrWebService = new SolrWebService($searchHandler, $username, $password, $instId, $useProxySettings);
 		}
 		return $success;
 	}

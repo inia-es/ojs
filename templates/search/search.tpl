@@ -1,8 +1,8 @@
 {**
  * templates/search/search.tpl
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * A unified search interface.
@@ -19,7 +19,7 @@
 			$('#searchForm').pkpHandler('$.pkp.pages.search.SearchFormHandler');
 		{rdelim});
 	</script>
-	<form method="post" id="searchForm" action="{url op="search"}">
+	<form id="searchForm" action="{url op="search"}">
 		<table class="data">
 			<tr valign="top">
 				<td class="label"><label for="query">{translate key="search.searchAllCategories"}</label></td>
@@ -150,7 +150,7 @@
 						</a>
 					{/if}
 					{if $hasAccess}
-						{foreach from=$publishedArticle->getLocalizedGalleys() item=galley name=galleyList}
+						{foreach from=$publishedArticle->getGalleys() item=galley name=galleyList}
 							&nbsp;<a href="{url journal=$journal->getPath() page="article" op="view" path=$publishedArticle->getBestArticleId($journal)|to_array:$galley->getBestGalleyId($journal)}" class="file">{$galley->getGalleyLabel()|escape}</a>
 						{/foreach}
 					{/if}

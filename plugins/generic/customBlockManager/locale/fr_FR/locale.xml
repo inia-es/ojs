@@ -4,15 +4,15 @@
 <!--
   * locale.xml
   *
-  * Copyright (c) 2013-2015 Simon Fraser University Library
-  * Copyright (c) 2003-2015 John Willinsky
+  * Copyright (c) 2013-2016 Simon Fraser University Library
+  * Copyright (c) 2003-2016 John Willinsky
   * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
   *
   * Localization strings for the fr_FR locale.
   *
   -->
  
-<locale name="fr_FR" full_name="Français">
+<locale name="fr_FR" full_name="Français (France)">
 	<message key="plugins.generic.customBlockManager.displayName">Gestionnaire de bloc personnalisé</message>
 	<message key="plugin.generic.customBlockManager.introduction"><![CDATA[Vous pouvez utiliser ce plugiciel pour ajouter ou supprimer des plugiciels de blocs personnalisés. Vous pouvez alors modifier le contenu à l'aide de la page de <a href="{$systemPluginsUrl}">Plugiciels du système</a> (dans la section Plugiciel de blocs). Pour placer votre plugiciel à l'emplacement souhaité dans l'encadré latéral, aller à <a href="{$setupStep56}">Passer à l'étape 5.6</a>]]></message>
 	<message key="plugins.generic.customBlockManager.settings">Paramètres</message>

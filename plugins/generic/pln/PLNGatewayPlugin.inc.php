@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/pln/PLNGatewayPlugin.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class PLNGatewayPlugin
@@ -17,6 +17,7 @@
 import('classes.plugins.GatewayPlugin');
 import('lib.pkp.classes.site.VersionCheck');
 import('lib.pkp.classes.db.DBResultRange');
+import('lib.pkp.classes.core.ArrayItemIterator');
 
 define('PLN_PLUGIN_PING_ARTICLE_COUNT', 12);
 
@@ -111,28 +112,68 @@ class PLNGatewayPlugin extends GatewayPlugin {
 	 * Handle fetch requests for this plugin.
 	 */
 	function fetch() {
-                $templateMgr =& TemplateManager::getManager();
+		$plugin =& $this->getPLNPlugin();
+		$templateMgr =& TemplateManager::getManager();
 
-                $journal =& Request::getJournal();
-                $templateMgr->assign_by_ref('journal', $journal);
+		$journal =& Request::getJournal();
+		$templateMgr->assign_by_ref('journal', $journal);
 
-                $pluginVersionFile = $this->getPluginPath() . DIRECTORY_SEPARATOR . '/version.xml';
-                $pluginVersion =& VersionCheck::parseVersionXml($pluginVersionFile);
-                $templateMgr->assign_by_ref('pluginVersion', $pluginVersion);
+		$pluginVersionFile = $this->getPluginPath() . DIRECTORY_SEPARATOR . 'version.xml';
+		$pluginVersion =& VersionCheck::parseVersionXml($pluginVersionFile);
+		$templateMgr->assign_by_ref('pluginVersion', $pluginVersion);
 
-                $versionDao =& DAORegistry::getDAO('VersionDAO');
-                $ojsVersion =& $versionDao->getCurrentVersion();
-                $templateMgr->assign('ojsVersion', $ojsVersion->getVersionString());
+		$terms = array();
+		$termsAccepted = $plugin->termsAgreed($journal->getId());
+		if ($termsAccepted) {
+			$templateMgr->assign('termsAccepted', 'yes');
+			$terms = unserialize($plugin->getSetting($journal->getId(), 'terms_of_use'));
+			$termsAgreement = unserialize($plugin->getSetting($journal->getId(), 'terms_of_use_agreement'));
+		} else {
+			$templateMgr->assign('termsAccepted', 'no');
+		}
+		
+		$application =& PKPApplication::getApplication();
+		$products =& $application->getEnabledProducts('plugins.generic');
+		$curlVersion = 'not installed';
+		if(function_exists('curl_version')) {
+			$versionArray = curl_version();
+			$curlVersion = $versionArray['version'];
+		}
+		$prerequisites = array(
+			'phpVersion' => PHP_VERSION,
+			'curlVersion' => $curlVersion,
+			'zipInstalled' => class_exists('ZipArchive') ? 'yes' : 'no',
+			'tarInstalled' => class_exists('Archive_Tar') ? 'yes' : 'no',
+			'acron' => isset($products['acron']) ? 'yes' : 'no',
+			'tasks' => Config::getVar('scheduled_tasks', false) ? 'yes' : 'no',
+		);
+		$templateMgr->assign_by_ref('prerequisites', $prerequisites);
 
-                $publishedArticlesDAO =& DAORegistry::getDAO('PublishedArticleDAO');
-                $range = new DBResultRange(PLN_PLUGIN_PING_ARTICLE_COUNT);
-                $publishedArticles =& $publishedArticlesDAO->getPublishedArticlesByJournalId($journal->getId(), $range,  true);
-                $templateMgr->assign_by_ref('articles', $publishedArticles);
+		$termKeys = array_keys($terms);
+		$termsDisplay = array();
+		foreach ($termKeys as $key) {
+			$termsDisplay[] = array(
+				'key' => $key,
+				'term' => $terms[$key]['term'],
+				'updated' => $terms[$key]['updated'],
+				'accepted' => $termsAgreement[$key]
+			);
+		}
+		$templateMgr->assign('termsDisplay', new ArrayItemIterator($termsDisplay));
 
-                $templateMgr->display($this->getTemplatePath() . DIRECTORY_SEPARATOR . 'ping.tpl', 'text/xml');
+		$versionDao =& DAORegistry::getDAO('VersionDAO');
+		$ojsVersion =& $versionDao->getCurrentVersion();
+		$templateMgr->assign('ojsVersion', $ojsVersion->getVersionString());
 
-                return true;
+		$publishedArticlesDAO =& DAORegistry::getDAO('PublishedArticleDAO');
+		$range = new DBResultRange(PLN_PLUGIN_PING_ARTICLE_COUNT);
+		$publishedArticles =& $publishedArticlesDAO->getPublishedArticlesByJournalId($journal->getId(), $range, true);
+		$templateMgr->assign_by_ref('articles', $publishedArticles);
+		$templateMgr->assign_by_ref('pln_network', $plugin->getSetting($journal->getId(), 'pln_network'));
+
+		$templateMgr->display($this->getTemplatePath() . DIRECTORY_SEPARATOR . 'ping.tpl', 'text/xml');
+
+		return true;
 	}
-}
 
-?>
+}

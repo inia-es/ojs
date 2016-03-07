@@ -3,8 +3,8 @@
 /**
  * @file classes/article/PublishedArticleDAO.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class PublishedArticleDAO
@@ -567,7 +567,14 @@ class PublishedArticleDAO extends DAO {
 		$articleIds = array();
 		$functionName = $useCache?'retrieveCached':'retrieve';
 		$result =& $this->$functionName(
-			'SELECT a.article_id AS pub_id FROM published_articles pa, articles a LEFT JOIN sections s ON s.section_id = a.section_id WHERE pa.article_id = a.article_id' . (isset($journalId)?' AND a.journal_id = ?':'') . ' ORDER BY pa.date_published DESC',
+			'SELECT	a.article_id AS pub_id
+			FROM	published_articles pa
+				JOIN articles a ON a.article_id = pa.article_id
+				JOIN sections s ON s.section_id = a.section_id
+				JOIN issues i ON pa.issue_id = i.issue_id
+			WHERE	i.published = 1
+				' . (isset($journalId)?' AND a.journal_id = ?':'') . '
+			ORDER BY pa.date_published DESC',
 			isset($journalId)?(int) $journalId:false
 		);
 

@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/googleAnalytics/GoogleAnalyticsPlugin.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class GoogleAnalyticsPlugin
@@ -175,8 +175,12 @@ class GoogleAnalyticsPlugin extends GenericPlugin {
 
 		if (!empty($currentJournal)) {
 			$journal =& Request::getJournal();
-			$journalId = $journal->getId();
-			$googleAnalyticsSiteId = $this->getSetting($journalId, 'googleAnalyticsSiteId');
+			$contextId = $journal->getId();
+		} else {
+			$contextId = CONTEXT_ID_NONE;
+		}
+		if ($contextId || $this->getSetting($contextId, 'enabled')) {
+			$googleAnalyticsSiteId = $this->getSetting($contextId, 'googleAnalyticsSiteId');
 
 			$article = $templateMgr->get_template_vars('article');
 			if (Request::getRequestedPage() == 'article' && $article) {
@@ -190,7 +194,7 @@ class GoogleAnalyticsPlugin extends GenericPlugin {
 
 			if (!empty($googleAnalyticsSiteId) || !empty($authorAccounts)) {
 				$templateMgr->assign('googleAnalyticsSiteId', $googleAnalyticsSiteId);
-				$trackingCode = $this->getSetting($journalId, 'trackingCode');
+				$trackingCode = $this->getSetting($contextId, 'trackingCode');
 				if ($trackingCode == "ga") {
 					$output .= $templateMgr->fetch($this->getTemplatePath() . 'pageTagGa.tpl');
 				} elseif ($trackingCode == "urchin") {

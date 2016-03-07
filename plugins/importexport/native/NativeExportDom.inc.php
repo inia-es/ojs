@@ -3,8 +3,8 @@
 /**
  * @file plugins/importexport/native/NativeExportDom.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class NativeExportDom
@@ -278,13 +278,13 @@ class NativeExportDom {
 
 		XMLCustomWriter::createChildWithText($doc, $root, 'pages', $article->getPages(), false);
 
-		// NOTE that this is a required field for import, but it's
-		// possible here to generate nonconforming XML via export b/c
-		// of the potentially missing date_published node. This is due
-		// to legacy data issues WRT an earlier lack of ability to
-		// define article pub dates. Some legacy data will be missing
-		// this date.
-		XMLCustomWriter::createChildWithText($doc, $root, 'date_published', NativeExportDom::formatDate($article->getDatePublished()), false);
+		$node = XMLCustomWriter::createChildWithText($doc, $root, 'date_published', NativeExportDom::formatDate($article->getDatePublished()), false);
+		if (!$node) {
+			// Bug #6480: Fixes for incorrect date_published handling required nulling-out
+			// of potentially erroneous data. In case the article's date_published is null,
+			// fall back on the issue date_published.
+			XMLCustomWriter::createChildWithText($doc, $root, 'date_published', NativeExportDom::formatDate($issue->getDatePublished()), false);
+		}
 
 		if ($article->getAccessStatus() == ARTICLE_ACCESS_OPEN) {
 			$accessNode =& XMLCustomWriter::createElement($doc, 'open_access');
@@ -295,7 +295,8 @@ class NativeExportDom {
 		$permissionsNode =& XMLCustomWriter::createElement($doc, 'permissions');
 		XMLCustomWriter::appendChild($root, $permissionsNode);
 		XMLCustomWriter::createChildWithText($doc, $permissionsNode, 'license_url', $article->getLicenseURL(), false);
-		foreach ($article->getCopyrightHolder(null) as $locale => $copyrightHolder) {
+		$copyrightHolders = $article->getCopyrightHolder(null);
+		if (is_array($copyrightHolders)) foreach ($copyrightHolders as $locale => $copyrightHolder) {
 			$copyrightHolderNode =& XMLCustomWriter::createChildWithText($doc, $permissionsNode, 'copyright_holder', $copyrightHolder, false);
 			if ($copyrightHolderNode) {
 				XMLCustomWriter::setAttribute($copyrightHolderNode, 'locale', $locale);

@@ -3,8 +3,8 @@
 /**
  * @file classes/submission/editor/EditorAction.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class EditorAction
@@ -63,7 +63,8 @@ class EditorAction extends SectionEditorAction {
 
 			// Make the selected editor the new editor
 			$editAssignment->setEditorId($sectionEditorId);
-			$editAssignment->setDateNotified(Core::getCurrentDate());
+			$editAssignment->setDateAssigned(Core::getCurrentDate()); 
+			$editAssignment->setDateNotified((is_array($send) && isset($send['skip']))?null:Core::getCurrentDate());
 			$editAssignment->setDateUnderway(null);
 
 			$editAssignments =& $editorSubmission->getEditAssignments();

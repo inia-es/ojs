@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/piwik/PiwikPlugin.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class PiwikPlugin
@@ -169,7 +169,7 @@ class PiwikPlugin extends GenericPlugin {
 			$piwikSiteId = $this->getSetting($journalId, 'piwikSiteId');
 			$piwikUrl = $this->getSetting($journalId, 'piwikUrl');
 			if (!empty($piwikSiteId) && !empty($piwikUrl)) {
-				$output = 	'<!-- Piwik -->'.
+				$output .= 	'<!-- Piwik -->'.
 						'<script type="text/javascript">'.
 						'var pkBaseURL = "'.$piwikUrl.'/";'.
 						'document.write(unescape("%3Cscript src=\'" + pkBaseURL + "piwik.js\' type=\'text/javascript\'%3E%3C/script%3E"));'.

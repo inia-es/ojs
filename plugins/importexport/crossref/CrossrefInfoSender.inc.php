@@ -3,8 +3,8 @@
 /**
  * @file plugins/importexport/crossref/CrossrefInfoSender.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class CrossrefInfoSender
@@ -45,9 +45,9 @@ class CrossrefInfoSender extends ScheduledTask {
 	}
 
 	/**
-	 * @see FileLoader::execute()
+	 * @see ScheduledTask::executeActions()
 	 */
-	function execute() {
+	function executeActions() {
 		if (!$this->_plugin) return false;
 
 		$plugin = $this->_plugin;
@@ -80,7 +80,7 @@ class CrossrefInfoSender extends ScheduledTask {
 				$plugin->registerObjects($request, $exportSpec, $journal);
 			}
 		}
-
+		return true;
 	}
 
 	/**

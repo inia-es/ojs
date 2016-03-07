@@ -1,8 +1,8 @@
 {**
  * @file plugins/importexport/crossref/templates/settings.tpl
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * DataCite plugin settings
@@ -87,7 +87,7 @@
 			<tr valign="top">
 				<td width="20%" class="label">{fieldLabel name="automaticRegistration" key="plugins.importexport.crossref.settings.form.automaticRegistration"}</td>
 				<td width="80%" class="value">
-					<input type="checkbox" name="automaticRegistration" id="automaticRegistration" value="1" {if $automaticRegistration} checked="checked"{/if} />&nbsp;{translate key="plugins.importexport.crossref.settings.form.automaticRegistration.description"}
+					<input type="checkbox" name="automaticRegistration" id="automaticRegistration" value="1" {if $automaticRegistration} checked="checked"{/if} />&nbsp;{translate key="plugins.importexport.crossref.settings.form.automaticRegistration.description" unregisteredURL=$unregisteredURL}
 				</td>
 			</tr>
 			<tr><td colspan="2">&nbsp;</td></tr>

@@ -7,8 +7,8 @@
 /**
  * @file classes/submission/form/ArticleGalleyForm.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class ArticleGalleyForm
@@ -86,9 +86,12 @@ class ArticleGalleyForm extends Form {
 		$galleyDao =& DAORegistry::getDAO('ArticleGalleyDAO'); /* @var $galleylDao ArticleGalleyDAO */
 
 		$publicGalleyId = $this->getData('publicGalleyId');
-		if ($publicGalleyId && $galleyDao->getGalleyByPubId('publisher-id', $publicGalleyId, $this->articleId)) {
-			$this->addError('publicGalleyId', __('editor.publicGalleyIdentificationExists', array('publicIdentifier' => $publicGalleyId)));
-			$this->addErrorField('publicGalleyId');
+		if ($publicGalleyId) {
+			$galleyWithPublicGalleyId = $galleyDao->getGalleyByPubId('publisher-id', $publicGalleyId, $this->articleId);
+			if ($galleyWithPublicGalleyId && $galleyWithPublicGalleyId->getId() != $this->galleyId) {
+				$this->addError('publicGalleyId', __('editor.publicGalleyIdentificationExists', array('publicIdentifier' => $publicGalleyId)));
+				$this->addErrorField('publicGalleyId');
+			}
 		}
 
 		// Verify additional fields from public identifer plug-ins.
