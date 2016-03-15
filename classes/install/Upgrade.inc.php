@@ -3,8 +3,8 @@
 /**
  * @file classes/install/Upgrade.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class Upgrade
@@ -1312,7 +1312,24 @@ class Upgrade extends Installer {
 		}
 		return true;
 	}
+	
+	/**
+	 * For 2.4.6 upgrade: delete completed payments related to non existing users.
+	 * @return boolean
+	 */
+	function deleteOrphanedCompletedPayments() {
+		$paymentDao =& DAORegistry::getDAO('OJSCompletedPaymentDAO');
+		$result =& $paymentDao->retrieve('SELECT DISTINCT cp.user_id FROM completed_payments AS cp LEFT JOIN users AS u ON cp.user_id = u.user_id WHERE u.user_id IS NULL');
 
+		while(!$result->EOF) {
+			$row =& $result->GetRowAssoc(false);
+			$result->MoveNext();
+
+			$paymentDao->update('DELETE from completed_payments WHERE user_id = ?', array($row['user_id']), false);
+		}
+
+		return true;
+	}
 }
 
 ?>

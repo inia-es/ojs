@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/lucene/classes/SolrWebService.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class SolrWebService
@@ -71,6 +71,9 @@ class SolrWebService extends XmlWebService {
 	/** @var array An issue cache. */
 	var $_issueCache;
 
+	/** @var boolean Whether the proxy settings in the config.inc.php should be considered for the web service request. */
+	var $_useProxySettings = false;
+
 
 	/**
 	 * Constructor
@@ -81,8 +84,9 @@ class SolrWebService extends XmlWebService {
 	 * @param $password string The corresponding password.
 	 * @param $instId string The unique ID of this OJS installation to partition
 	 *  a shared index.
+	 * @param $useProxy boolean Whether the proxy settings from config.inc.php should be considered.
 	 */
-	function SolrWebService($searchHandler, $username, $password, $instId) {
+	function SolrWebService($searchHandler, $username, $password, $instId, $useProxy = false) {
 		parent::XmlWebService();
 
 		// Configure the web service.
@@ -102,6 +106,7 @@ class SolrWebService extends XmlWebService {
 		// Set the installation ID.
 		assert(is_string($instId) && !empty($instId));
 		$this->_instId = $instId;
+		$this->_useProxySettings = $useProxy;
 	}
 
 
@@ -924,7 +929,7 @@ class SolrWebService extends XmlWebService {
 	 *  See _serviceMessage for more details about the error.
 	 */
 	function &_makeRequest($url, $params = array(), $method = 'GET') {
-		$webServiceRequest = new WebServiceRequest($url, $params, $method);
+		$webServiceRequest = new WebServiceRequest($url, $params, $method, $this->_useProxySettings);
 		if ($method == 'POST') {
 			$webServiceRequest->setHeader('Content-Type', 'text/xml; charset=utf-8');
 		}

@@ -4,14 +4,14 @@
 <!--
   * @file plugins/generic/browse/locale/fr_FR/locale.xml
   *
-  * Copyright (c) 2013-2015 Simon Fraser University Library
-  * Copyright (c) 2003-2015 John Willinsky
+  * Copyright (c) 2013-2016 Simon Fraser University Library
+  * Copyright (c) 2003-2016 John Willinsky
   * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
   *
   * Browse plugin localization strings
   -->
  
-<locale name="fr_FR" full_name="Français">
+<locale name="fr_FR" full_name="Français (France)">
 	<!-- plugin -->
 	<message key="plugins.generic.browse.displayName">Naviguer</message>
 	<message key="plugins.generic.browse.description">Ce plugiciel permet la navigation par section et/ou des type d'identifiants.</message>

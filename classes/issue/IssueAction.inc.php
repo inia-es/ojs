@@ -3,8 +3,8 @@
 /**
  * @file classes/issue/IssueAction.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class IssueAction
@@ -119,6 +119,7 @@ class IssueAction {
 		$publishedArticleDao =& DAORegistry::getDAO('PublishedArticleDAO');
 		$publishedArticle =& $publishedArticleDao->getPublishedArticleByArticleId($articleId, null, true);
 		$result = false;
+		$issue = null;
 		if (isset($user) && isset($journal)) {
 			if (IssueAction::allowedPrePublicationAccess($journal, $publishedArticle)) {
 				 $result = true;
@@ -144,7 +145,7 @@ class IssueAction {
 				}
 			}
 		}
-		HookRegistry::call('IssueAction::subscribedUser', array(&$journal, &$result));
+		HookRegistry::call('IssueAction::subscribedUser', array(&$journal, &$result, &$issue, &$publishedArticle));
 		return $result;
 	}
 

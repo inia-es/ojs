@@ -3,8 +3,8 @@
 /**
  * @file classes/journal/JournalDAO.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class JournalDAO
@@ -417,6 +417,29 @@ class JournalDAO extends DAO {
 	 */
 	function getInsertJournalId() {
 		return $this->getInsertId('journals', 'journal_id');
+	}
+
+	/**
+	 * Get journals by setting.  Backported from master pkp-lib's ContextDAO.
+	 * @param $settingName string
+	 * @param $settingValue mixed
+	 * @param $contextId int
+	 * @return DAOResultFactory
+	 */
+	function getBySetting($settingName, $settingValue, $contextId = null) {
+		$params = array($settingName, $settingValue);
+		if ($contextId) $params[] = $contextId;
+
+		$result = $this->retrieve(
+			'SELECT * FROM journals AS c
+			LEFT JOIN journal_settings AS cs
+			ON c.journal_id = cs.journal_id'.
+			' WHERE cs.setting_name = ? AND cs.setting_value = ?' .
+			($contextId?' AND c.journal_id = ?':''),
+			$params
+		);
+
+		return new DAOResultFactory($result, $this, '_returnJournalFromRow');
 	}
 }
 

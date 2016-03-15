@@ -3,8 +3,8 @@
 /**
  * @file plugins/importexport/users/UserXMLParser.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class UserXMLParser
@@ -354,7 +354,7 @@ class UserXMLParser {
 		if (empty($baseUsername)) {
 			$baseUsername = String::regexp_replace('/[^A-Z0-9]/i', '', $user->getFirstName());
 		}
-		if (empty($username)) {
+		if (empty($baseUsername)) {
 			// Default username if we can't use the user's last or first name
 			$baseUsername = 'user';
 		}

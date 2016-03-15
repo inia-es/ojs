@@ -4,15 +4,15 @@
 <!--
   * plugins/importexport/duracloud/locale/ru_RU/locale.xml
   *
-  * Copyright (c) 2013-2015 Simon Fraser University Library
-  * Copyright (c) 2003-2015 John Willinsky
+  * Copyright (c) 2013-2016 Simon Fraser University Library
+  * Copyright (c) 2003-2016 John Willinsky
   * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
   *
-  * Localization strings for the ru_RU (Russian) locale.
+  * Localization strings for the ru_RU (Русский) locale.
   * With updates from Pavel Pisklakov (revising translation). 
   -->
  
-<locale name="ru_RU" full_name="Russian">
+<locale name="ru_RU" full_name="Русский">
 	<message key="plugins.importexport.duracloud.displayName">Плагин «Импорт/экспорт DuraCloud»</message>
 	<message key="plugins.importexport.duracloud.description">Этот плагин позволяет архивировать и восстанавливать выпуски, используя для хранения внешнюю службу DuraCloud</message>
 

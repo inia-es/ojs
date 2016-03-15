@@ -3,8 +3,8 @@
 /**
  * @file plugins/importexport/crossref/classes/form/CrossRefSettingsForm.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class CrossRefSettingsForm
@@ -37,6 +37,15 @@ class CrossRefSettingsForm extends DOIExportSettingsForm {
 		$this->addCheck(new FormValidatorEmail($this, 'depositorEmail', 'required', 'plugins.importexport.crossref.settings.form.depositorEmailRequired'));
 	}
 
+	/**
+	 * @see Form::display()
+	 */
+	function display($request) {
+		$templateMgr =& TemplateManager::getManager($request);
+		$plugin = $this->_plugin;
+		$templateMgr->assign('unregisteredURL', $request->url(null, null, 'importexport', array('plugin', $plugin->getName(), 'all')));
+		parent::display($request);
+	}
 
 	//
 	// Implement template methods from DOIExportSettingsForm

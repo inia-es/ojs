@@ -3,8 +3,8 @@
 /**
  * @file plugins/importexport/datacite/DataciteExportPlugin.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class DataciteExportPlugin
@@ -216,7 +216,14 @@ class DataciteExportPlugin extends DOIExportPlugin {
 		assert(!empty($url));
 
 		// Prepare HTTP session.
-		$curlCh = curl_init ();
+		$curlCh = curl_init();
+		if ($httpProxyHost = Config::getVar('proxy', 'http_host')) {
+			curl_setopt($curlCh, CURLOPT_PROXY, $httpProxyHost);
+			curl_setopt($curlCh, CURLOPT_PROXYPORT, Config::getVar('proxy', 'http_port', '80'));
+			if ($username = Config::getVar('proxy', 'username')) {
+				curl_setopt($curlCh, CURLOPT_PROXYUSERPWD, $username . ':' . Config::getVar('proxy', 'password'));
+			}
+		}
 		curl_setopt($curlCh, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curlCh, CURLOPT_POST, true);
 
@@ -299,6 +306,16 @@ class DataciteExportPlugin extends DOIExportPlugin {
 		}
 	}
 
+	/**
+	 * @see AcronPlugin::parseCronTab()
+	 */
+	function callbackParseCronTab($hookName, $args) {
+		$taskFilesPath =& $args[0];
+		$taskFilesPath[] = $this->getPluginPath() . DIRECTORY_SEPARATOR . 'scheduledTasks.xml';
+
+		return false;
+	}
+
 
 	//
 	// Private helper methods
@@ -373,19 +390,19 @@ class DataciteExportPlugin extends DOIExportPlugin {
 		$url = null;
 		switch (true) {
 			case is_a($object, 'Issue'):
-				$url = $router->url($request, null, 'issue', 'view', $object->getBestIssueId($journal));
+				$url = $router->url($request, $journal->getPath(), 'issue', 'view', $object->getBestIssueId($journal));
 				break;
 
 			case is_a($object, 'PublishedArticle'):
-				$url = $router->url($request, null, 'article', 'view', $object->getBestArticleId($journal));
+				$url = $router->url($request, $journal->getPath(), 'article', 'view', $object->getBestArticleId($journal));
 				break;
 
 			case is_a($object, 'ArticleGalley'):
-				$url = $router->url($request, null, 'article', 'view', array($article->getBestArticleId($journal), $object->getBestGalleyId($journal)));
+				$url = $router->url($request, $journal->getPath(), 'article', 'view', array($article->getBestArticleId($journal), $object->getBestGalleyId($journal)));
 				break;
 
 			case is_a($object, 'SuppFile'):
-				$url = $router->url($request, null, 'article', 'downloadSuppFile', array($article->getBestArticleId($journal), $object->getBestSuppFileId($journal)));
+				$url = $router->url($request, $journal->getPath(), 'article', 'downloadSuppFile', array($article->getBestArticleId($journal), $object->getBestSuppFileId($journal)));
 				break;
 		}
 
