@@ -3,8 +3,8 @@
 /**
  * @file plugins/importexport/native/NativeImportDom.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class NativeImportDom
@@ -70,10 +70,6 @@ class NativeImportDom {
 			// There were errors. Delete all the issues we've
 			// successfully created.
 			NativeImportDom::cleanupFailure ($dependentItems);
-			$issueDao =& DAORegistry::getDAO('IssueDAO');
-			foreach ($issues as $issue) {
-				$issueDao->deleteIssue($issue);
-			}
 			return false;
 		}
 		return true;

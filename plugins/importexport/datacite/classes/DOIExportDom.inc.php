@@ -3,8 +3,8 @@
 /**
  * @file plugins/importexport/.../classes/DOIExportDom.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class DOIExportDom
@@ -336,6 +336,8 @@ class DOIExportDom {
 				$cache->markComplete('articlesByIssue', $issueId);
 				$articlesByIssue = $cache->get('articlesByIssue', $issueId);
 			}
+		} else {
+			$articlesByIssue = $cache->get('articlesByIssue', $issueId);
 		}
 		return $articlesByIssue;
 	}
@@ -361,6 +363,8 @@ class DOIExportDom {
 				$cache->markComplete('galleysByArticle', $articleId);
 				$galleysByArticle = $cache->get('galleysByArticle', $articleId);
 			}
+		} else {
+			$galleysByArticle = $cache->get('galleysByArticle', $articleId);
 		}
 		return $galleysByArticle;
 	}

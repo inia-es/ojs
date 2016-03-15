@@ -3,8 +3,8 @@
 /**
  * @file pages/user/RegistrationHandler.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class RegistrationHandler
@@ -78,18 +78,35 @@ class RegistrationHandler extends UserHandler {
 
 		if ($regForm->validate()) {
 			$regForm->execute();
-			if (Config::getVar('email', 'require_validation')) {
-				// Send them home; they need to deal with the
-				// registration email.
-				$request->redirect(null, 'index');
-			}
 
 			$reason = null;
 
-			if (Config::getVar('security', 'implicit_auth')) {
+			$implicitAuth = strtolower(Config::getVar('security', 'implicit_auth'));
+			if ($implicitAuth === true) {
 				Validation::login('', '', $reason);
+			} elseif ($implicitAuth === IMPLICIT_AUTH_OPTIONAL) {
+				// Try both types of authentication
+				if ($regForm->getData('username') && $regForm->getData('password')) {
+					Validation::login($regForm->getData('username'), $regForm->getData('password'), $reason);
+				} else {
+					Validation::login('', '', $reason);
+				}
 			} else {
 				Validation::login($regForm->getData('username'), $regForm->getData('password'), $reason);
+			}
+
+			if (!Validation::isLoggedIn()) {
+				if (Config::getVar('email', 'require_validation')) {
+					// Inform the user that they need to deal with the
+					// registration email.
+					$this->setupTemplate($request, true);
+					$templateMgr =& TemplateManager::getManager();
+					$templateMgr->assign('pageTitle', 'user.register.emailValidation');
+					$templateMgr->assign('errorMsg', 'user.register.emailValidationDescription');
+					$templateMgr->assign('backLink', $request->url(null, 'login'));
+					$templateMgr->assign('backLinkLabel', 'user.login');
+					return $templateMgr->display('common/error.tpl');
+				}
 			}
 
 			if ($reason !== null) {

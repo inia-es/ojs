@@ -4,14 +4,14 @@
 <!--
   * plugins/generic/browse/locale/zh_CN/locale.xml
   *
-  * Copyright (c) 2013-2015 Simon Fraser University Library
-  * Copyright (c) 2003-2015 John Willinsky
+  * Copyright (c) 2013-2016 Simon Fraser University Library
+  * Copyright (c) 2003-2016 John Willinsky
   * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
   *
   * Browse plugin localization strings
   -->
  
-<locale name="zh_CN" full_name="China">
+<locale name="zh_CN" full_name="简体中文">
 	<!-- plugin -->
 	<message key="plugins.generic.browse.displayName">浏览</message>
 	<message key="plugins.generic.browse.description">该款插件可以浏览部分或识别类型</message>

@@ -3,8 +3,8 @@
 <!--
   * @file plugins/importexport/medra/locale/es_ES/common.xml
   *
-  * Copyright (c) 2013-2015 Simon Fraser University Library
-  * Copyright (c) 2003-2015 John Willinsky
+  * Copyright (c) 2013-2016 Simon Fraser University Library
+  * Copyright (c) 2003-2016 John Willinsky
   * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
   *
   * Credits: http://pkp.sfu.ca/wiki/index.php?title=OJS:_Spanish_%28es_ES%29
@@ -12,7 +12,8 @@
   * Shared localization strings
   -->
 
-<locale name="es_ES" full_name="Español (España)">	<message key="plugins.importexport.common.error.DOIsNotAvailable">Para utilizar este módulo, vaya a la categoría de módulo "Identificador público", habilite y configure el módulo de Identificador digital de objeto (DOI) y especifique un prefijo DOI válido.</message>
+<locale name="es_ES" full_name="Español (España)">
+	<message key="plugins.importexport.common.error.DOIsNotAvailable">Para utilizar este módulo, vaya a la categoría de módulo "Identificador público", habilite y configure el módulo de Identificador digital de objeto (DOI) y especifique un prefijo DOI válido.</message>
 	<message key="plugins.importexport.common.error.pluginNotConfigured">El módulo no está completamente configurado.</message>
 
 	<message key="plugins.importexport.common.settings">Configuración</message>

@@ -3,8 +3,8 @@
 /**
  * @file classes/tasks/SubscriptionExpiryReminder.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class SubscriptionExpiryReminder
@@ -77,7 +77,7 @@ class SubscriptionExpiryReminder extends ScheduledTask {
 		);
 
 		import('classes.mail.MailTemplate');
-		$mail = new MailTemplate($emailKey, $journal->getPrimaryLocale());
+		$mail = new MailTemplate($emailKey, $journal->getPrimaryLocale(), false, $journal, false, true);
 		$mail->setReplyTo($subscriptionEmail, $subscriptionName);
 		$mail->addRecipient($user->getEmail(), $user->getFullName());
 		$mail->setSubject($mail->getSubject($journal->getPrimaryLocale()));

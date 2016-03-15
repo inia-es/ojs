@@ -3,8 +3,8 @@
 /**
  * @file classes/manager/form/UserManagementForm.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
  *
  * @class UserManagementForm
@@ -26,7 +26,8 @@ class UserManagementForm extends Form {
 	function UserManagementForm($userId = null) {
 		parent::Form('manager/people/userProfileForm.tpl');
 
-		if (!Validation::isJournalManager()) $userId = null;
+		$journal =& Request::getJournal();
+		if ($userId && !Validation::canAdminister($journal->getId(), $userId)) $userId = null;
 		$this->userId = isset($userId) ? (int) $userId : null;
 		$site =& Request::getSite();
 
@@ -36,7 +37,7 @@ class UserManagementForm extends Form {
 			$this->addCheck(new FormValidatorCustom($this, 'username', 'required', 'user.register.form.usernameExists', array(DAORegistry::getDAO('UserDAO'), 'userExistsByUsername'), array($this->userId, true), true));
 			$this->addCheck(new FormValidatorAlphaNum($this, 'username', 'required', 'user.register.form.usernameAlphaNumeric'));
 
-			if (!Config::getVar('security', 'implicit_auth')) {
+			if (!Config::getVar('security', 'implicit_auth') || strtolower(Config::getVar('security', 'implicit_auth')) === IMPLICIT_AUTH_OPTIONAL) {
 				$this->addCheck(new FormValidator($this, 'password', 'required', 'user.profile.form.passwordRequired'));
 				$this->addCheck(new FormValidatorLength($this, 'password', 'required', 'user.register.form.passwordLengthTooShort', '>=', $site->getMinPasswordLength()));
 				$this->addCheck(new FormValidatorCustom($this, 'password', 'required', 'user.register.form.passwordsDoNotMatch', create_function('$password,$form', 'return $password == $form->getData(\'password2\');'), array(&$this)));
@@ -111,7 +112,7 @@ class UserManagementForm extends Form {
 		);
 
 		// Send implicitAuth setting down to template
-		$templateMgr->assign('implicitAuth', Config::getVar('security', 'implicit_auth'));
+		$templateMgr->assign('implicitAuth', strtolower(Config::getVar('security', 'implicit_auth')));
 
 		$site =& Request::getSite();
 		$templateMgr->assign('availableLocales', $site->getSupportedLocaleNames());
@@ -181,9 +182,13 @@ class UserManagementForm extends Form {
 			$roleSymbolic = $roleDao->getRolePath($roleId);
 
 			$this->_data = array(
-				'enrollAs' => array($roleSymbolic)
+				'enrollAs' => array($roleSymbolic),
+				'generatePassword' => 1,
+				'sendNotify' => 1,
+				'mustChangePassword' => 1
 			);
 		}
+		return parent::initData();
 	}
 
 	/**
@@ -315,9 +320,8 @@ class UserManagementForm extends Form {
 				// FIXME Should try to create user here too?
 				$auth->doSetUserInfo($user);
 			}
-
+			parent::execute($user);
 			$userDao->updateObject($user);
-
 		} else {
 			$user->setUsername($this->getData('username'));
 			if ($this->getData('generatePassword')) {
@@ -338,6 +342,7 @@ class UserManagementForm extends Form {
 			}
 
 			$user->setDateRegistered(Core::getCurrentDate());
+			parent::execute($user);
 			$userId = $userDao->insertUser($user);
 
 			$isManager = Validation::isJournalManager();

@@ -3,8 +3,8 @@
 /**
  * @file plugins/generic/pln/PLNPlugin.inc.php
  *
- * Copyright (c) 2013-2015 Simon Fraser University Library
- * Copyright (c) 2003-2015 John Willinsky
+ * Copyright (c) 2013-2016 Simon Fraser University Library
+ * Copyright (c) 2003-2016 John Willinsky
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
  * @class PLNPlugin
@@ -14,35 +14,49 @@
  */
 
 import('lib.pkp.classes.plugins.GenericPlugin');
+import('lib.pkp.classes.config.Config');
 import('classes.article.PublishedArticle');
 import('classes.issue.Issue');
 
 define('PLN_PLUGIN_NAME','plnplugin');
 
-define('PLN_PLUGIN_NETWORK', 'http://pkp-pln.lib.sfu.ca');
+// defined here in case an upgrade doesn't pick up the default value.
+define('PLN_DEFAULT_NETWORK', 'http://pkp-pln.lib.sfu.ca');
+define('PLN_DEFAULT_STATUS_SUFFIX', '/docs/status');
 
 define('PLN_PLUGIN_HTTP_STATUS_OK', 200);
 define('PLN_PLUGIN_HTTP_STATUS_CREATED', 201);
 
 define('PLN_PLUGIN_XML_NAMESPACE','http://pkp.sfu.ca/SWORD');
+
+// base IRI for the SWORD server. IRIs are constructed by appending to 
+// this constant.
+define('PLN_PLUGIN_BASE_IRI', '/api/sword/2.0');
 // used to retrieve the service document
-define('PLN_PLUGIN_SD_IRI','/api/sword/2.0/sd-iri');
+define('PLN_PLUGIN_SD_IRI', PLN_PLUGIN_BASE_IRI . '/sd-iri');
 // used to submit a deposit
-define('PLN_PLUGIN_COL_IRI','/api/sword/2.0/col-iri');
+define('PLN_PLUGIN_COL_IRI',PLN_PLUGIN_BASE_IRI . '/col-iri');
 // used to edit and query the state of a deposit
-define('PLN_PLUGIN_CONT_IRI','/api/sword/2.0/cont-iri');
+define('PLN_PLUGIN_CONT_IRI',PLN_PLUGIN_BASE_IRI . '/cont-iri');
 
 define('PLN_PLUGIN_ARCHIVE_FOLDER','pln');
 
-define('PLN_PLUGIN_DEPOSIT_STATUS_NEW',				0x00);
-define('PLN_PLUGIN_DEPOSIT_STATUS_PACKAGED',		0x01);
-define('PLN_PLUGIN_DEPOSIT_STATUS_TRANSFERRED',		0x02);
-define('PLN_PLUGIN_DEPOSIT_STATUS_RECEIVED',		0x04);
-define('PLN_PLUGIN_DEPOSIT_STATUS_SYNCING',			0x08);
-define('PLN_PLUGIN_DEPOSIT_STATUS_SYNCED',			0x10);
-define('PLN_PLUGIN_DEPOSIT_STATUS_REMOTE_FAILURE',	0x20);
-define('PLN_PLUGIN_DEPOSIT_STATUS_LOCAL_FAILURE',	0x40);
-define('PLN_PLUGIN_DEPOSIT_STATUS_UPDATE',			0x80);
+// local statuses
+define('PLN_PLUGIN_DEPOSIT_STATUS_NEW',					0x00);
+define('PLN_PLUGIN_DEPOSIT_STATUS_PACKAGED',			0x01);
+define('PLN_PLUGIN_DEPOSIT_STATUS_TRANSFERRED',			0x02);
+
+// status on the processing server
+define('PLN_PLUGIN_DEPOSIT_STATUS_RECEIVED',			0x04);
+define('PLN_PLUGIN_DEPOSIT_STATUS_VALIDATED',			0x08); // was SYNCING
+define('PLN_PLUGIN_DEPOSIT_STATUS_SENT',				0x10); // was SYNCED
+
+// status in the LOCKSS PLN 
+define('PLN_PLUGIN_DEPOSIT_STATUS_LOCKSS_RECEIVED',		0x20); // was REMOTE_FAILURE
+define('PLN_PLUGIN_DEPOSIT_STATUS_LOCKSS_SYNCING',		0x40); // was LOCAL_FAILURE
+define('PLN_PLUGIN_DEPOSIT_STATUS_LOCKSS_AGREEMENT',	0x80); // was UPDATE
+
+define('PLN_PLUGIN_DEPOSIT_STATUS_UPDATE',				0x100);
 
 define('PLN_PLUGIN_DEPOSIT_OBJECT_ARTICLE', 'PublishedArticle');
 define('PLN_PLUGIN_DEPOSIT_OBJECT_ISSUE', 'Issue');
@@ -95,7 +109,7 @@ class PLNPlugin extends GenericPlugin {
 
 		return $success;
 	}
-	
+
 	/**
 	 * Register this plugin's DAOs with the application
 	 */	
@@ -175,15 +189,23 @@ class PLNPlugin extends GenericPlugin {
 	 */
 	function getSetting($journalId,$settingName) {
 		// if there isn't a journal_uuid, make one
-		if ($settingName == 'journal_uuid') {
-			$uuid = parent::getSetting($journalId, $settingName);
-			if (!is_null($uuid) && $uuid != '') return $uuid;
-			$this->updateSetting($journalId, $settingName, $this->newUUID());
+                switch ($settingName) {
+			case 'journal_uuid':
+				$uuid = parent::getSetting($journalId, $settingName);
+				if (!is_null($uuid) && $uuid != '')
+					return $uuid;
+				$this->updateSetting($journalId, $settingName, $this->newUUID());
+				break;
+			case 'pln_network':
+				return Config::getVar('lockss', 'pln_url', PLN_DEFAULT_NETWORK);
+			case 'pln_status_docs':
+				return Config::getVar('lockss', 'pln_status_docs', Config::getVar('lockss', 'pln_url', PLN_DEFAULT_NETWORK) . PLN_DEFAULT_STATUS_SUFFIX);
+			default:
+				break;
 		}
-		
 		return parent::getSetting($journalId,$settingName);
 	}
-	
+
 	/**
 	 * Register as a gateway plugin.
 	 * @param $hookName string
@@ -307,12 +329,47 @@ class PLNPlugin extends GenericPlugin {
 		$journal =& Request::getJournal();
 
 		switch($verb) {
+			case 'enable':
+				if( ! @include_once('Archive/Tar.php')) {
+					$message = NOTIFICATION_TYPE_ERROR;
+					$messageParams = array('contents' => __('plugins.generic.pln.notifications.archive_tar_missing'));
+					break;
+				}
+				if( ! $this->php5Installed()) {
+					$message = NOTIFICATION_TYPE_ERROR;
+					$messageParams = array('contents' => __('plugins.generic.pln.notifications.php5_missing'));
+					break;
+				}
+				if( ! $this->curlInstalled()) {
+					$message = NOTIFICATION_TYPE_ERROR;
+					$messageParams = array('contents' => __('plugins.generic.pln.notifications.curl_missing'));
+					break;
+				}
+				if( ! $this->zipInstalled()) {
+					$message = NOTIFICATION_TYPE_ERROR;
+					$messageParams = array('contents' => __('plugins.generic.pln.notifications.zip_missing'));
+					break;
+				}
+				if( ! $this->tarInstalled()) {
+					$message = NOTIFICATION_TYPE_ERROR;
+					$messageParams = array('contents' => __('plugins.generic.pln.notifications.tar_missing'));
+					break;
+				}
+				$message = NOTIFICATION_TYPE_SUCCESS;
+				$messageParams = array('contents' => __('plugins.generic.pln.enabled'));
+				$this->updateSetting($journal->getId(), 'enabled', true);
+				break;
+			case 'disable':
+				$message = NOTIFICATION_TYPE_SUCCESS;
+				$messageParams = array('contents' => __('plugins.generic.pln.disabled'));
+				$this->updateSetting($journal->getId(), 'enabled', false);
+				break;
 			case 'settings':
 				$templateMgr =& TemplateManager::getManager();
 				$templateMgr->register_function('plugin_url', array(&$this, 'smartyPluginUrl'));
 				$this->import('classes.form.PLNSettingsForm');
 				$form = new PLNSettingsForm($this, $journal->getId());
-				
+
 				if (Request::getUserVar('save')) {
 					$form->readInputData();
 					if ($form->validate()) {
@@ -443,7 +500,7 @@ class PLNPlugin extends GenericPlugin {
 	/**
 	 * Request service document at specified URL
 	 * @param $journalId int The journal id for the service document we wish to fetch
-	 * @return int The HTTP response status
+	 * @return int The HTTP response status or FALSE for a network error.
 	 */
 	function getServiceDocument($journalId) {
 			
@@ -453,10 +510,10 @@ class PLNPlugin extends GenericPlugin {
 		// get the journal and determine the language.
 		$locale = $journal->getPrimaryLocale();
 		$language = strtolower(str_replace('_', '-', $locale));
-
+		$network = $this->getSetting($journal->getId(), 'pln_network');
 		// retrieve the service document
 		$result = $this->_curlGet(
-			PLN_PLUGIN_NETWORK . PLN_PLUGIN_SD_IRI,
+			$network . PLN_PLUGIN_SD_IRI,
 			array(
 				'On-Behalf-Of: '.$this->getSetting($journalId, 'journal_uuid'),
 				'Journal-URL: '.$journal->getUrl(),
@@ -465,7 +522,14 @@ class PLNPlugin extends GenericPlugin {
 		);
 		
 		// stop here if we didn't get an OK
-		if ($result['status'] != PLN_PLUGIN_HTTP_STATUS_OK) return $result['status'];
+		if ($result['status'] != PLN_PLUGIN_HTTP_STATUS_OK) {
+			if($result['status'] === FALSE) {
+				error_log(__('plugins.generic.pln.error.network.servicedocument', array('error' => $result['error'])));
+			} else {
+				error_log(__('plugins.generic.pln.error.http.servicedocument', array('error' => $result['status'])));
+			}
+			return $result['status'];
+		}
 
 		$serviceDocument = new DOMDocument();
 		$serviceDocument->preserveWhiteSpace = false;
@@ -518,14 +582,14 @@ class PLNPlugin extends GenericPlugin {
 		$roleDao =& DAORegistry::getDAO('RoleDAO');
 		$journalManagers = $roleDao->getUsersByRoleId(ROLE_ID_JOURNAL_MANAGER,$journalId);
 		import('classes.notification.NotificationManager');
-		$notificationManager =& new NotificationManager();
+		$notificationManager = new NotificationManager();
 		// TODO: this currently gets sent to all journal managers - perhaps only limit to the technical contact's account?
 		while ($journalManager =& $journalManagers->next()) {
 			$notificationManager->createTrivialNotification($journalManager->getId(), $notificationType);
 			unset($journalManager);
 		}
 	}
-	
+
 	/**
 	 * Get whether we're running php 5
 	 * @return boolean
@@ -550,14 +614,29 @@ class PLNPlugin extends GenericPlugin {
 		return class_exists('ZipArchive');
 	}
         
-        /**
-         * Check if the Archive_Tar extension is installed and available. BagIt
-         * requires it, and will not function without it.
-         */
-        function tarInstalled() {
-                return class_exists('Archive_Tar');
-        }
-	
+	/**
+	 * Check if the Archive_Tar extension is installed and available. BagIt
+	 * requires it, and will not function without it.
+	 * 
+	 * @return boolean
+	 */
+	function tarInstalled() {
+		@include_once('Archive/Tar.php');
+		return class_exists('Archive_Tar');
+	}
+
+	/**
+	 * Check if acron is enabled, or if the scheduled_tasks config var is set.
+	 * The plugin needs to run periodically through one of those systems.
+	 * 
+	 * @return boolean
+	 */
+	function cronEnabled() {
+		$application =& PKPApplication::getApplication();
+		$products =& $application->getEnabledProducts('plugins.generic');
+		return isset($products['acron']) || Config::getVar('scheduled_tasks', false);
+	}
+		
 	/**
 	 * Get resource using CURL
 	 * @param $url string
@@ -573,6 +652,13 @@ class PLNPlugin extends GenericPlugin {
 			CURLOPT_HTTPHEADER => $headers,
 			CURLOPT_URL => $url
 		));
+		if ($httpProxyHost = Config::getVar('proxy', 'http_host')) {
+			curl_setopt($curl, CURLOPT_PROXY, $httpProxyHost);
+			curl_setopt($curl, CURLOPT_PROXYPORT, Config::getVar('proxy', 'http_port', '80'));
+			if ($username = Config::getVar('proxy', 'username')) {
+				curl_setopt($curl, CURLOPT_PROXYUSERPWD, $username . ':' . Config::getVar('proxy', 'password'));
+			}
+		}
 		
 		$httpResult = curl_exec($curl);
 		$httpStatus = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -604,6 +690,13 @@ class PLNPlugin extends GenericPlugin {
 			CURLOPT_INFILESIZE => filesize($filename),
 			CURLOPT_URL => $url
 		));
+		if ($httpProxyHost = Config::getVar('proxy', 'http_host')) {
+			curl_setopt($curl, CURLOPT_PROXY, $httpProxyHost);
+			curl_setopt($curl, CURLOPT_PROXYPORT, Config::getVar('proxy', 'http_port', '80'));
+			if ($username = Config::getVar('proxy', 'username')) {
+				curl_setopt($curl, CURLOPT_PROXYUSERPWD, $username . ':' . Config::getVar('proxy', 'password'));
+			}
+		}
 		
 		$httpResult = curl_exec($curl);
 		$httpStatus = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -640,6 +733,13 @@ class PLNPlugin extends GenericPlugin {
 			CURLOPT_INFILESIZE => filesize($filename),
 			CURLOPT_URL => $url
 		));
+		if ($httpProxyHost = Config::getVar('proxy', 'http_host')) {
+			curl_setopt($curl, CURLOPT_PROXY, $httpProxyHost);
+			curl_setopt($curl, CURLOPT_PROXYPORT, Config::getVar('proxy', 'http_port', '80'));
+			if ($username = Config::getVar('proxy', 'username')) {
+				curl_setopt($curl, CURLOPT_PROXYUSERPWD, $username . ':' . Config::getVar('proxy', 'password'));
+			}
+		}
 		
 		$httpResult = curl_exec($curl);
 		$httpStatus = curl_getinfo($curl, CURLINFO_HTTP_CODE);
