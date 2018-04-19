@@ -49,3 +49,6 @@
 [submodule "plugins/generic/REDIB"]
 	path = plugins/generic/REDIB
 	url = https://github.com/inia-es/plugin-REDIB
+[submodule "cleanCache"]
+	path = cleanCache
+	url = https://github.com/inia-es/ojs-cleanCache
