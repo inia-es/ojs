@@ -229,7 +229,9 @@ class OpenAIREPlugin extends GenericPlugin {
 
 		$openAIREDao =& DAORegistry::getDAO('OpenAIREDAO');
 		$openAIREDao->setOAI($journalOAI);
-		if ($openAIREDao->isOpenAIREArticle($article->getId())) {
+		
+//comentamos condicion de tener id en el articulo
+//if ($openAIREDao->isOpenAIREArticle($article->getId())) {
 
 			// Determine OpenAIRE DC elements values
 			// OpenAIRE DC Relation
@@ -299,7 +301,9 @@ class OpenAIREPlugin extends GenericPlugin {
 				$newDCDateStatements = array('dc:date' => $dcDateValues);
 				$dc11Description->setStatements($newDCDateStatements);
 			}
-		}
+
+//comentamos cierre id openaire	
+	//}
 		return false;
 	}
 
