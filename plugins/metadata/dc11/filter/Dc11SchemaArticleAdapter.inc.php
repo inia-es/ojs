@@ -82,6 +82,14 @@ class Dc11SchemaArticleAdapter extends MetadataDataObjectAdapter {
 
 		// Title
 		$this->_addLocalizedElements($dc11Description, 'dc:title', $article->getTitle(null));
+		/*ARVO
+		foreach($article->getTitle(null) as $clave=>$variable){
+			if($variable!=''){
+        			$this->_addLocalizedElements($dc11Description, 'dc:title', array($clave=>$variable));
+			}
+		}
+		*/
+
 
 		// Creator
 		$authors = $article->getAuthors();
@@ -125,11 +133,21 @@ class Dc11SchemaArticleAdapter extends MetadataDataObjectAdapter {
 		// Type
 		$driverType = 'info:eu-repo/semantics/article';
 		$dc11Description->addStatement('dc:type', $driverType, METADATA_DESCRIPTION_UNKNOWN_LOCALE);
-		$types = $section->getIdentifyType(null);
+	
+		/*ARVO	
+		foreach($section->getIdentifyType(null) as $clave=>$variable){
+			if($variable!=''){
+        			$types =array($clave=>$variable);
+			}
+		}
+		ARVO*/		
+		$types = $section->getIdentifyType(null);	
+		
 		$types = array_merge_recursive(
 			empty($types)?array(AppLocale::getLocale() => __('rt.metadata.pkp.peerReviewed')):$types,
 			(array) $article->getType(null)
 		);
+		
 		$this->_addLocalizedElements($dc11Description, 'dc:type', $types);
 		$driverVersion = 'info:eu-repo/semantics/publishedVersion';
 		$dc11Description->addStatement('dc:type', $driverVersion, METADATA_DESCRIPTION_UNKNOWN_LOCALE);
@@ -250,6 +268,20 @@ class Dc11SchemaArticleAdapter extends MetadataDataObjectAdapter {
 
 		if ($licenseUrl = $article->getLicenseURL()) $dc11Description->addStatement('dc:rights', $licenseUrl);
 
+		//ARVO //insert Rights genericos
+		//array con titulo de la revista
+        $tituloRevista = array_values($journal->getTitle(null));
+		//string con titulo adaptado
+		$rightsPersonal= 'Instituto Nacional de Investigación y Tecnología Agraria y Alimentaria, O.A., M.P.';			
+        if (empty($copyrightHolder) || empty($copyrightYear)) {
+			//titulo revista
+            //$dc11Description->addStatement('dc:rights', __('submission.copyrightStatement', array('copyrightHolder' => $tituloRevista[0], 'copyrightYear' => date('Y', strtotime($article->getDatePublished())))));
+			//adaptacion inia
+			$dc11Description->addStatement('dc:rights', __('submission.copyrightStatement', array('copyrightHolder' => $rightsPersonal, 'copyrightYear' => date('Y', strtotime($article->getDatePublished())))));
+		}
+        //ARVO
+
+		
 		Hookregistry::call('Dc11SchemaArticleAdapter::extractMetadataFromDataObject', array(&$this, $article, $journal, $issue, &$dc11Description));
 
 		return $dc11Description;
@@ -274,6 +306,9 @@ class Dc11SchemaArticleAdapter extends MetadataDataObjectAdapter {
 	 * @param $propertyName string
 	 * @param $localizedValues array
 	 */
+
+//ARVO
+/*
 	function _addLocalizedElements(&$description, $propertyName, $localizedValues) {
 		foreach(stripAssocArray((array) $localizedValues) as $locale => $values) {
 			if (is_scalar($values)) $values = array($values);
@@ -283,5 +318,21 @@ class Dc11SchemaArticleAdapter extends MetadataDataObjectAdapter {
 			}
 		}
 	}
+*/
+	//funcion exclude null items
+	function _addLocalizedElements(&$description, $propertyName, $localizedValues) {
+		foreach(stripAssocArray((array) $localizedValues) as $locale => $values) {
+			if (is_scalar($values)) $values = array($values);
+				foreach($values as $value) {
+					//exclude items null
+					if($value!=''){
+						$description->addStatement($propertyName,$value, $locale);
+						unset($value);
+					}
+                }
+         }
+    }
+//ARVO
+
 }
 ?>
